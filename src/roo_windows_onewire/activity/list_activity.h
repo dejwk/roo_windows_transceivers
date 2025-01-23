@@ -4,6 +4,7 @@
 
 #include "roo_scheduler.h"
 #include "roo_windows/composites/menu/title.h"
+#include "roo_windows/containers/holder.h"
 #include "roo_windows/containers/horizontal_layout.h"
 #include "roo_windows/containers/list_layout.h"
 #include "roo_windows/containers/scrollable_panel.h"
@@ -16,8 +17,8 @@
 #include "roo_windows/widgets/progress_bar.h"
 #include "roo_windows/widgets/switch.h"
 // #include "roo_windows/widgets/text_block.h"
-#include "roo_onewire/thermometer_roles.h"
 #include "roo_windows/widgets/text_label.h"
+#include "roo_windows_onewire/activity/model.h"
 
 namespace roo_windows_onewire {
 
@@ -26,14 +27,15 @@ typedef std::function<void(roo_windows::Task& task, int id)>
 
 class ThermometerListItem : public roo_windows::HorizontalLayout {
  public:
-  ThermometerListItem(const roo_windows::Environment& env,
-                      ThermometerSelectedFn on_click);
+  ThermometerListItem(
+      const roo_windows::Environment& env, ThermometerSelectedFn on_click,
+      const Model::DisplayValueCreator& display_value_creator);
 
   ThermometerListItem(const ThermometerListItem& other);
 
   bool isClickable() const override { return true; }
 
-  void set(const roo_onewire::ThermometerRole& thermometer);
+  void set(int idx, const Model& model);
 
   roo_windows::PreferredSize getPreferredSize() const override {
     return roo_windows::PreferredSize(
@@ -41,29 +43,31 @@ class ThermometerListItem : public roo_windows::HorizontalLayout {
         roo_windows::PreferredSize::WrapContentHeight());
   }
 
-  void onClicked() override { on_click_(*getTask(), id_); }
+  void onClicked() override { on_click_(*getTask(), idx_); }
 
  private:
   // bool isOpen() const { return is_open_; }
 
+  const roo_windows::Environment* env_;
   roo_windows::Icon thermometer_icon_;
-  int id_;
+  int idx_;
   roo_windows::TextLabel name_;
-  roo_windows::TextLabel reading_;
+  std::unique_ptr<Widget> reading_;
   // roo_windows::Icon lock_icon_;
   ThermometerSelectedFn on_click_;
+  const Model::DisplayValueCreator& display_value_creator_;
 };
 
 class ThermometerListModel
     : public roo_windows::ListModel<ThermometerListItem> {
  public:
-  ThermometerListModel(roo_onewire::ThermometerRoles& model);
+  ThermometerListModel(Model& model);
 
   int elementCount() const override;
   void set(int idx, ThermometerListItem& dest) const override;
 
  private:
-  roo_onewire::ThermometerRoles& model_;
+  Model& model_;
 };
 
 // The list of WiFi networks.
@@ -73,12 +77,10 @@ class ThermometerList : public roo_windows::ListLayout<ThermometerListItem> {
 };
 
 // All of the widgets of the list activity.
-class ListActivityContents
-    : public roo_windows::VerticalLayout,
-      public roo_onewire::ThermometerRoles::EventListener {
+class ListActivityContents : public roo_windows::VerticalLayout,
+                             public roo_control::SensorEventListener {
  public:
-  ListActivityContents(const roo_windows::Environment& env,
-                       roo_onewire::ThermometerRoles& model,
+  ListActivityContents(const roo_windows::Environment& env, Model& model,
                        ThermometerSelectedFn thermometer_selected_fn);
 
   roo_windows::PreferredSize getPreferredSize() const override {
@@ -90,9 +92,9 @@ class ListActivityContents
   void update() { list_.modelChanged(); }
 
  private:
-  void conversionCompleted() override;
+  void newReadingsAvailable() override;
 
-  roo_onewire::ThermometerRoles& model_;
+  Model& model_;
   roo_windows::menu::Title title_;
   ThermometerListModel list_model_;
   ThermometerList list_;
@@ -101,8 +103,7 @@ class ListActivityContents
 class ListActivity : public roo_windows::Activity {
  public:
   ListActivity(const roo_windows::Environment& env,
-               roo_scheduler::Scheduler& scheduler,
-               roo_onewire::ThermometerRoles& model,
+               roo_scheduler::Scheduler& scheduler, Model& model,
                ThermometerSelectedFn network_selected_fn);
 
   roo_windows::Widget& getContents() override { return scrollable_container_; }
@@ -113,7 +114,7 @@ class ListActivity : public roo_windows::Activity {
   void onResume() override { contents_.update(); }
 
  private:
-  roo_onewire::ThermometerRoles& model_;
+  Model& model_;
 
   ListActivityContents contents_;
   roo_windows::ScrollablePanel scrollable_container_;

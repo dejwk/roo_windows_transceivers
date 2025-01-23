@@ -1,9 +1,9 @@
 #pragma once
 
+#include "roo_control/sensors/sensor.h"
 #include "roo_icons/filled/action.h"
 #include "roo_icons/filled/content.h"
 #include "roo_icons/filled/notification.h"
-#include "roo_onewire/thermometer_roles.h"
 #include "roo_windows/composites/menu/title.h"
 #include "roo_windows/config.h"
 #include "roo_windows/containers/horizontal_layout.h"
@@ -15,6 +15,7 @@
 #include "roo_windows/widgets/icon.h"
 #include "roo_windows/widgets/icon_with_caption.h"
 #include "roo_windows/widgets/text_field.h"
+#include "roo_windows_onewire/activity/model.h"
 #include "roo_windows_onewire/activity/resources.h"
 
 namespace roo_windows_onewire {
@@ -23,10 +24,10 @@ typedef std::function<void(roo_windows::Task& task, int id)> SelectFn;
 
 class ThermometerDetailsActivityContents
     : public roo_windows::VerticalLayout,
-      public roo_onewire::ThermometerRoles::EventListener {
+      public roo_control::SensorEventListener {
  public:
   ThermometerDetailsActivityContents(const roo_windows::Environment& env,
-                                     roo_onewire::ThermometerRoles& model,
+                                     Model& model,
                                      std::function<void()> assign_fn,
                                      std::function<void()> unassign_fn)
       : roo_windows::VerticalLayout(env),
@@ -84,17 +85,14 @@ class ThermometerDetailsActivityContents
         roo_windows::PreferredSize::WrapContentHeight());
   }
 
-  void enter(int id) {
-    id_ = id;
-    const roo_onewire::ThermometerRole& t = model_.thermometerRoleById(id);
-    name_.setText(t.name());
-    if (t.rom_code().isUnknown()) {
+  void enter(int idx) {
+    idx_ = idx;
+    name_.setText(model_.binding_label(idx_));
+    if (!model_.isBound(idx_)) {
       rom_code_.setText(kStrNotAssigned);
     } else {
-      char out[17];
-      out[16] = 0;
-      t.rom_code().toCharArray(out);
-      rom_code_.setText(out);
+      rom_code_.setText(
+          model_.sensors().sensorUserFriendlyName(model_.getBinding(idx_)));
     }
   }
 
@@ -104,24 +102,24 @@ class ThermometerDetailsActivityContents
   }
 
   void updateReading() {
-    const roo_onewire::ThermometerRole& role = model_.thermometerRoleById(id_);
-    if (!role.isAssigned()) {
+    if (!model_.isBound(idx_)) {
       reading_.setText("");
     } else {
-      roo_temperature::Temperature t = model_.temperatureById(id_);
-      if (t.isUnknown()) {
+      roo_control::Measurement m = model_.sensors().read(model_.getBinding(idx_));
+      CHECK_EQ(roo_control_Quantity_kTemperature, m.quantity());
+      if (m.isUnknown()) {
         reading_.setText("? °C");
       } else {
-        reading_.setTextf("%3.1f°C", t.degCelcius());
+        reading_.setTextf("%3.1f°C", m.value());
       }
     }
   }
 
  private:
-  void conversionCompleted() override { updateReading(); }
+  void newReadingsAvailable() override { updateReading(); }
 
-  roo_onewire::ThermometerRoles& model_;
-  int id_;
+  Model& model_;
+  int idx_;
   roo_windows::menu::Title title_;
   roo_windows::TextLabel name_;
   roo_windows::TextLabel rom_code_;
@@ -134,31 +132,29 @@ class ThermometerDetailsActivityContents
 
 class ThermometerDetailsActivity : public roo_windows::Activity {
  public:
-  ThermometerDetailsActivity(const roo_windows::Environment& env,
-                             roo_onewire::ThermometerRoles& model,
+  ThermometerDetailsActivity(const roo_windows::Environment& env, Model& model,
                              SelectFn assign_fn, SelectFn unassign_fn)
       : roo_windows::Activity(),
-        id_(),
+        idx_(),
         model_(model),
         contents_(
             env, model,
-            [this, assign_fn]() { assign_fn(*getContents().getTask(), id_); },
+            [this, assign_fn]() { assign_fn(*getContents().getTask(), idx_); },
             [this, unassign_fn]() {
-              unassign_fn(*getContents().getTask(), id_);
+              unassign_fn(*getContents().getTask(), idx_);
             }),
         scrollable_container_(env, contents_) {}
 
   roo_windows::Widget& getContents() override { return scrollable_container_; }
 
-  void enter(roo_windows::Task& task, int id) {
-    id_ = id;
+  void enter(roo_windows::Task& task, int idx) {
+    idx_ = idx;
     task.enterActivity(this);
   }
 
   void onResume() override {
-    const roo_onewire::ThermometerRole& t = model_.thermometerRoleById(id_);
-    contents_.enter(id_);
-    contents_.onDetailsChanged(t.isAssigned());
+    contents_.enter(idx_);
+    contents_.onDetailsChanged(model_.isBound(idx_));
     contents_.updateReading();
   }
 
@@ -166,12 +162,12 @@ class ThermometerDetailsActivity : public roo_windows::Activity {
 
   void onStop() override {
     model_.removeEventListener(&contents_);
-    id_ = -1;
+    idx_ = -1;
   }
 
  private:
-  int id_;
-  roo_onewire::ThermometerRoles& model_;
+  int idx_;
+  Model& model_;
   ThermometerDetailsActivityContents contents_;
   roo_windows::ScrollablePanel scrollable_container_;
 };

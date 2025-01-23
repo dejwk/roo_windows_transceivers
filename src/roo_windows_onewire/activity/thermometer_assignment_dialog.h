@@ -2,11 +2,11 @@
 
 #include <string>
 
-#include "roo_onewire/thermometer_roles.h"
 #include "roo_windows/composites/radio/radio_list.h"
 #include "roo_windows/containers/list_layout.h"
 #include "roo_windows/dialogs/dialog.h"
 #include "roo_windows/dialogs/radio_list_dialog.h"
+#include "roo_windows_onewire/activity/model.h"
 
 namespace roo_windows_onewire {
 
@@ -28,35 +28,34 @@ class UnassignedThermometerRadioGroupItem
 class UnassignedThermometerRadioGroupModel
     : public roo_windows::ListModel<UnassignedThermometerRadioGroupItem> {
  public:
-  UnassignedThermometerRadioGroupModel(roo_onewire::ThermometerRoles& model)
-      : model_(model) {}
+  UnassignedThermometerRadioGroupModel(Model& model) : model_(model) {}
 
   int elementCount() const override;
   void set(int idx, UnassignedThermometerRadioGroupItem& dest) const override;
 
  private:
-  roo_onewire::ThermometerRoles& model_;
+  Model& model_;
 };
 
 class UnassignedThermometerSelectionDialog
     : public roo_windows::RadioListDialog<UnassignedThermometerRadioGroupModel>,
-      public roo_onewire::ThermometerRoles::EventListener {
+      public roo_control::SensorEventListener {
  public:
   UnassignedThermometerSelectionDialog(const roo_windows::Environment& env,
-                                       roo_onewire::ThermometerRoles& model);
+                                       Model& model);
 
   void onEnter() override;
   void onExit(int result) override;
 
   void onChange() override;
 
-  void discoveryCompleted() override;
-  void conversionCompleted() override;
+  void sensorsChanged() override;
+  void newReadingsAvailable() override;
 
  private:
-  roo_onewire::ThermometerRoles& model_;
+  Model& model_;
   UnassignedThermometerRadioGroupModel list_model_;
-  roo_onewire::RomCode selected_rom_code_;
+  roo_control::UniversalDeviceId selected_device_id_;
 };
 
 }  // namespace roo_windows_onewire

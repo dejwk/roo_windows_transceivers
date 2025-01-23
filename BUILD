@@ -18,5 +18,6 @@ cc_library(
     deps = [
         "//lib/roo_onewire",
         "//lib/roo_windows",
+        "//lib/roo_control",
     ],
 )
