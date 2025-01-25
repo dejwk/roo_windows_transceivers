@@ -1,9 +1,9 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 #include "roo_windows/composites/radio/radio_list.h"
-#include "roo_windows/containers/holder.h"
 #include "roo_windows/containers/list_layout.h"
 #include "roo_windows/dialogs/dialog.h"
 #include "roo_windows/dialogs/radio_list_dialog.h"
@@ -25,7 +25,7 @@ class UnassignedThermometerRadioGroupItem
 
  private:
   roo_windows::TextLabel name_;
-  roo_windows::Holder reading_;
+  std::unique_ptr<Widget> reading_;
   const DeviceStateUi* device_state_ui_;
 };
 

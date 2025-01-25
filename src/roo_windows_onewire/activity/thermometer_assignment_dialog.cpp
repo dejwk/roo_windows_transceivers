@@ -12,29 +12,28 @@ UnassignedThermometerRadioGroupItem::UnassignedThermometerRadioGroupItem(
     const roo_windows::Environment& env, const DeviceStateUi* device_state_ui)
     : HorizontalLayout(env),
       name_(env, "1-Wire:1234567812345678", roo_windows::font_subtitle1()),
-      reading_(env, device_state_ui->creator_fn()),
+      reading_(device_state_ui->creator_fn()),
       device_state_ui_(device_state_ui) {
   setGravity(roo_windows::Gravity(roo_windows::kHorizontalGravityNone,
                                   roo_windows::kVerticalGravityMiddle));
   name_.setMargins(roo_windows::MARGIN_NONE);
   name_.setPadding(roo_windows::PADDING_SMALL);
   add(name_, HorizontalLayout::Params().setWeight(1));
-  add(reading_);
+  add(*reading_);
 }
 
 UnassignedThermometerRadioGroupItem::UnassignedThermometerRadioGroupItem(
     const UnassignedThermometerRadioGroupItem& other)
     : HorizontalLayout(other),
       name_(other.name_),
-      reading_(other.reading_),
       device_state_ui_(other.device_state_ui_) {
-  reading_.setContents(device_state_ui_->creator_fn());
+  reading_ = device_state_ui_->creator_fn();
   add(name_);
-  add(reading_);
+  add(*reading_);
 }
 
 void UnassignedThermometerRadioGroupItem::set(std::string id) {
-  device_state_ui_->setter_fn(id, *reading_.contents());
+  device_state_ui_->setter_fn(id, *reading_);
   name_.setText(std::move(id));
 }
 

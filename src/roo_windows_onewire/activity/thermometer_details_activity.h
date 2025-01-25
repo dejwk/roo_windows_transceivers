@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "roo_control/sensors/sensor.h"
 #include "roo_icons/filled/action.h"
 #include "roo_icons/filled/content.h"
@@ -17,7 +19,6 @@
 #include "roo_windows/widgets/text_field.h"
 #include "roo_windows_onewire/activity/model.h"
 #include "roo_windows_onewire/activity/resources.h"
-#include "roo_windows/containers/holder.h"
 
 namespace roo_windows_onewire {
 
@@ -38,7 +39,7 @@ class ThermometerDetailsActivityContents
               roo_display::kCenter | roo_display::kMiddle),
         rom_code_(env, "", roo_windows::font_caption(),
                   roo_display::kCenter | roo_display::kMiddle),
-        reading_(env, model.state_ui()->creator_fn()),
+        reading_(model.state_ui()->creator_fn()),
                 //  roo_display::kCenter | roo_display::kMiddle),
         d1_(env),
         actions_(env),
@@ -61,7 +62,7 @@ class ThermometerDetailsActivityContents
     // rom_code_.setMargins(roo_windows::MARGIN_NONE);
     add(name_, VerticalLayout::Params());
     add(rom_code_, VerticalLayout::Params());
-    add(reading_);
+    add(*reading_);
     add(d1_, VerticalLayout::Params().setWeight(1));
     // indicator_.setConnectionStatus(roo_windows::WifiIndicator::DISCONNECTED);
     actions_.setUseLargestChild(true);
@@ -102,7 +103,7 @@ class ThermometerDetailsActivityContents
   }
 
   void updateReading() {
-    model_.state_ui()->setter_fn(model_.getBinding(idx_), *reading_.contents());
+    model_.state_ui()->setter_fn(model_.getBinding(idx_), *reading_);
   }
 
  private:
@@ -113,7 +114,7 @@ class ThermometerDetailsActivityContents
   roo_windows::menu::Title title_;
   roo_windows::TextLabel name_;
   roo_windows::TextLabel rom_code_;
-  roo_windows::Holder reading_;
+  std::unique_ptr<Widget> reading_;
   roo_windows::HorizontalDivider d1_;
   roo_windows::HorizontalLayout actions_;
   roo_windows::IconWithCaption button_unassign_;
