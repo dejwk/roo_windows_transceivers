@@ -33,22 +33,19 @@ UnassignedThermometerRadioGroupItem::UnassignedThermometerRadioGroupItem(
   add(reading_);
 }
 
-void UnassignedThermometerRadioGroupItem::set(
-    std::string name, roo_control::UniversalDeviceId id) {
-  name_.setText(std::move(name));
+void UnassignedThermometerRadioGroupItem::set(std::string id) {
   device_state_ui_->setter_fn(id, *reading_.contents());
+  name_.setText(std::move(id));
 }
 
 int UnassignedThermometerRadioGroupModel::elementCount() const {
   // return model_.unassigned().size();
-  return model_.unassigned_sensors().size();
+  return model_.unassignedItemCount();
 }
 
 void UnassignedThermometerRadioGroupModel::set(
     int idx, UnassignedThermometerRadioGroupItem& dest) const {
-  const roo_control::UniversalDeviceId id = model_.unassigned_sensors()[idx];
-  std::string label = model_.sensors().sensorUserFriendlyName(id);
-  dest.set(label, id);
+  dest.set(std::string(model_.unassignedItemName(idx)));
 }
 
 UnassignedThermometerSelectionDialog::UnassignedThermometerSelectionDialog(
@@ -63,7 +60,7 @@ UnassignedThermometerSelectionDialog::UnassignedThermometerSelectionDialog(
 
 void UnassignedThermometerSelectionDialog::onEnter() {
   model_.addEventListener(this);
-  model_.sensors().requestUpdate();
+  model_.requestUpdate();
   reset();
 }
 
@@ -76,8 +73,8 @@ void UnassignedThermometerSelectionDialog::sensorsChanged() {
   int new_s = -1;
   if (s >= 0) {
     // Update the selection to stick to the originally selected rom code.
-    for (size_t i = 0; i < model_.unassigned_sensors().size(); ++i) {
-      if (model_.unassigned_sensors()[i] == selected_device_id_) {
+    for (size_t i = 0; i < model_.unassignedItemCount(); ++i) {
+      if (model_.unassignedItemName(i) == selected_device_id_) {
         // Found!
         new_s = i;
         break;
@@ -94,8 +91,8 @@ void UnassignedThermometerSelectionDialog::newReadingsAvailable() {
 
 void UnassignedThermometerSelectionDialog::onChange() {
   int s = selected();
-  selected_device_id_ = (s >= 0) ? model_.unassigned_sensors()[s]
-                                 : roo_control::UniversalDeviceId();
+  selected_device_id_ =
+      (s >= 0) ? std::string(model_.unassignedItemName(s)) : std::string();
   RadioListDialog::onChange();
 }
 

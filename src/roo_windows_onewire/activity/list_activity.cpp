@@ -65,7 +65,7 @@ ListActivity::ListActivity(const roo_windows::Environment& env,
       contents_(env, model, thermometer_selected_fn),
       scrollable_container_(env, contents_),
       refresh_task_(
-          scheduler, [this]() { model_.sensors().requestUpdate(); },
+          scheduler, [this]() { model_.requestUpdate(); },
           roo_time::Millis(1000)) {}
 
 ListActivityContents::ListActivityContents(

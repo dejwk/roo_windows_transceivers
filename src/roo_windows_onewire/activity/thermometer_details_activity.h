@@ -17,6 +17,7 @@
 #include "roo_windows/widgets/text_field.h"
 #include "roo_windows_onewire/activity/model.h"
 #include "roo_windows_onewire/activity/resources.h"
+#include "roo_windows/containers/holder.h"
 
 namespace roo_windows_onewire {
 
@@ -37,8 +38,8 @@ class ThermometerDetailsActivityContents
               roo_display::kCenter | roo_display::kMiddle),
         rom_code_(env, "", roo_windows::font_caption(),
                   roo_display::kCenter | roo_display::kMiddle),
-        reading_(env, "", roo_windows::font_body1(),
-                 roo_display::kCenter | roo_display::kMiddle),
+        reading_(env, model.state_ui()->creator_fn()),
+                //  roo_display::kCenter | roo_display::kMiddle),
         d1_(env),
         actions_(env),
         button_unassign_(env, SCALED_ROO_ICON(filled, content_link_off),
@@ -91,8 +92,7 @@ class ThermometerDetailsActivityContents
     if (!model_.isBound(idx_)) {
       rom_code_.setText(kStrNotAssigned);
     } else {
-      rom_code_.setText(
-          model_.sensors().sensorUserFriendlyName(model_.getBinding(idx_)));
+      rom_code_.setText(model_.getBinding(idx_));
     }
   }
 
@@ -102,17 +102,7 @@ class ThermometerDetailsActivityContents
   }
 
   void updateReading() {
-    if (!model_.isBound(idx_)) {
-      reading_.setText("");
-    } else {
-      roo_control::Measurement m = model_.sensors().read(model_.getBinding(idx_));
-      CHECK_EQ(roo_control_Quantity_kTemperature, m.quantity());
-      if (m.isUnknown()) {
-        reading_.setText("? °C");
-      } else {
-        reading_.setTextf("%3.1f°C", m.value());
-      }
-    }
+    model_.state_ui()->setter_fn(model_.getBinding(idx_), *reading_.contents());
   }
 
  private:
@@ -123,7 +113,7 @@ class ThermometerDetailsActivityContents
   roo_windows::menu::Title title_;
   roo_windows::TextLabel name_;
   roo_windows::TextLabel rom_code_;
-  roo_windows::TextLabel reading_;
+  roo_windows::Holder reading_;
   roo_windows::HorizontalDivider d1_;
   roo_windows::HorizontalLayout actions_;
   roo_windows::IconWithCaption button_unassign_;

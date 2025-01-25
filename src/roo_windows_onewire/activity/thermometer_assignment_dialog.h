@@ -21,7 +21,7 @@ class UnassignedThermometerRadioGroupItem
   UnassignedThermometerRadioGroupItem(
       const UnassignedThermometerRadioGroupItem& other);
 
-  void set(std::string name, roo_control::UniversalDeviceId id);
+  void set(std::string name);
 
  private:
   roo_windows::TextLabel name_;
@@ -59,7 +59,7 @@ class UnassignedThermometerSelectionDialog
  private:
   Model& model_;
   UnassignedThermometerRadioGroupModel list_model_;
-  roo_control::UniversalDeviceId selected_device_id_;
+  std::string selected_device_id_;
 };
 
 }  // namespace roo_windows_onewire

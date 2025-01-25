@@ -17,8 +17,7 @@ class Configurator {
   Configurator(const roo_windows::Environment& env,
                roo_control::SensorUniverse& sensors,
                std::vector<ModelItem> bindings)
-      : widget_state_ui_(TemperatureWidgetSetter(&env, &sensors)),
-        model_(sensors, std::move(bindings), widget_state_ui_),
+      : model_(&env, sensors, std::move(bindings)),
         list_(env, env.scheduler(), model_,
               [this](roo_windows::Task& task, int idx) {
                 thermometerSelected(task, idx);
@@ -46,7 +45,7 @@ class Configurator {
   void assignThermometer(roo_windows::Task& task, int idx) {
     task.showDialog(assignment_, [&task, this, idx](int dialog_response_id) {
       if (dialog_response_id == 1) {
-        model_.bind(idx, model_.unassigned_sensors()[assignment_.selected()]);
+        model_.bind(idx, model_.unassignedItemName(assignment_.selected()));
       }
     });
   }
