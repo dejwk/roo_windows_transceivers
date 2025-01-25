@@ -21,10 +21,10 @@ class UnassignedThermometerRadioGroupItem
   UnassignedThermometerRadioGroupItem(
       const UnassignedThermometerRadioGroupItem& other);
 
-  void set(std::string name);
+  void set(std::string id);
 
  private:
-  roo_windows::TextLabel name_;
+  roo_windows::TextLabel id_;
   std::unique_ptr<Widget> reading_;
   const DeviceStateUi* device_state_ui_;
 };

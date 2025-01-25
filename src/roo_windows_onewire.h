@@ -45,7 +45,7 @@ class Configurator {
   void assignThermometer(roo_windows::Task& task, int idx) {
     task.showDialog(assignment_, [&task, this, idx](int dialog_response_id) {
       if (dialog_response_id == 1) {
-        model_.bind(idx, model_.unassignedItemName(assignment_.selected()));
+        model_.bind(idx, model_.unassignedItemId(assignment_.selected()));
       }
     });
   }

@@ -51,7 +51,7 @@ class ThermometerListItem : public roo_windows::HorizontalLayout {
   const roo_windows::Environment* env_;
   roo_windows::Icon thermometer_icon_;
   int idx_;
-  roo_windows::TextLabel name_;
+  roo_windows::TextLabel id_;
   std::unique_ptr<Widget> reading_;
   // roo_windows::Icon lock_icon_;
   ThermometerSelectedFn on_click_;

@@ -37,7 +37,7 @@ class ThermometerDetailsActivityContents
         title_(env, kStrThermometerDetails),
         name_(env, "", roo_windows::font_subtitle1(),
               roo_display::kCenter | roo_display::kMiddle),
-        rom_code_(env, "", roo_windows::font_caption(),
+        id_(env, "", roo_windows::font_caption(),
                   roo_display::kCenter | roo_display::kMiddle),
         reading_(model.state_ui()->creator_fn()),
                 //  roo_display::kCenter | roo_display::kMiddle),
@@ -58,10 +58,10 @@ class ThermometerDetailsActivityContents
     // add(indicator_, VerticalLayout::Params());
     name_.setPadding(roo_windows::PADDING_NONE);
     name_.setMargins(roo_windows::MARGIN_NONE);
-    // rom_code_.setPadding(roo_windows::PADDING_NONE);
-    // rom_code_.setMargins(roo_windows::MARGIN_NONE);
+    // id_.setPadding(roo_windows::PADDING_NONE);
+    // id_.setMargins(roo_windows::MARGIN_NONE);
     add(name_, VerticalLayout::Params());
-    add(rom_code_, VerticalLayout::Params());
+    add(id_, VerticalLayout::Params());
     add(*reading_);
     add(d1_, VerticalLayout::Params().setWeight(1));
     // indicator_.setConnectionStatus(roo_windows::WifiIndicator::DISCONNECTED);
@@ -91,15 +91,15 @@ class ThermometerDetailsActivityContents
     idx_ = idx;
     name_.setText(model_.binding_label(idx_));
     if (!model_.isBound(idx_)) {
-      rom_code_.setText(kStrNotAssigned);
+      id_.setText(kStrNotAssigned);
     } else {
-      rom_code_.setText(model_.getBinding(idx_));
+      id_.setText(model_.getBinding(idx_));
     }
   }
 
-  void onDetailsChanged(bool has_rom_code) {
-    button_unassign_.setEnabled(has_rom_code);
-    button_assign_.setEnabled(!has_rom_code);
+  void onDetailsChanged(bool has_id) {
+    button_unassign_.setEnabled(has_id);
+    button_assign_.setEnabled(!has_id);
   }
 
   void updateReading() {
@@ -113,7 +113,7 @@ class ThermometerDetailsActivityContents
   int idx_;
   roo_windows::menu::Title title_;
   roo_windows::TextLabel name_;
-  roo_windows::TextLabel rom_code_;
+  roo_windows::TextLabel id_;
   std::unique_ptr<Widget> reading_;
   roo_windows::HorizontalDivider d1_;
   roo_windows::HorizontalLayout actions_;

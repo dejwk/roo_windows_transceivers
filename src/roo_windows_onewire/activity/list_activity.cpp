@@ -11,7 +11,7 @@ ThermometerListItem::ThermometerListItem(const roo_windows::Environment& env,
                                          const DeviceStateUi* device_state_ui)
     : HorizontalLayout(env),
       thermometer_icon_(env, SCALED_ROO_ICON(filled, device_thermostat)),
-      name_(env, "", roo_windows::font_subtitle1()),
+      id_(env, "", roo_windows::font_subtitle1()),
       reading_(device_state_ui->creator_fn()),
       on_click_(on_click),
       device_state_ui_(device_state_ui) {
@@ -19,9 +19,9 @@ ThermometerListItem::ThermometerListItem(const roo_windows::Environment& env,
                                   roo_windows::kVerticalGravityMiddle));
   add(thermometer_icon_);
 
-  name_.setMargins(roo_windows::MARGIN_NONE);
-  name_.setPadding(roo_windows::PADDING_TINY);
-  add(name_, HorizontalLayout::Params().setWeight(1));
+  id_.setMargins(roo_windows::MARGIN_NONE);
+  id_.setPadding(roo_windows::PADDING_TINY);
+  add(id_, HorizontalLayout::Params().setWeight(1));
 
   // reading_.setMargins(roo_windows::MARGIN_NONE);
   // reading_.setPadding(roo_windows::PADDING_REGULAR, PADDING_TINY);
@@ -31,18 +31,18 @@ ThermometerListItem::ThermometerListItem(const roo_windows::Environment& env,
 ThermometerListItem::ThermometerListItem(const ThermometerListItem& other)
     : HorizontalLayout(other),
       thermometer_icon_(other.thermometer_icon_),
-      name_(other.name_),
+      id_(other.id_),
       reading_(other.device_state_ui_->creator_fn()),
       on_click_(other.on_click_),
       device_state_ui_(other.device_state_ui_) {
   add(thermometer_icon_);
-  add(name_, HorizontalLayout::Params().setWeight(1));
+  add(id_, HorizontalLayout::Params().setWeight(1));
   add(*reading_, HorizontalLayout::Params().setWeight(0));
 }
 
 void ThermometerListItem::set(int idx, const Model& model) {
   idx_ = idx;
-  name_.setText(model.binding_label(idx_));
+  id_.setText(model.binding_label(idx_));
   // roo_control::Measurement m = model.sensors().read(model.getBinding(idx_));
   device_state_ui_->setter_fn(model.getBinding(idx_), *reading_);
   thermometer_icon_.setVisibility(model.isBound(idx_) ? VISIBLE : INVISIBLE);

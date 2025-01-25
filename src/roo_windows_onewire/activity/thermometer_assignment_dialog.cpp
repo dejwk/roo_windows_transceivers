@@ -11,30 +11,30 @@ namespace roo_windows_onewire {
 UnassignedThermometerRadioGroupItem::UnassignedThermometerRadioGroupItem(
     const roo_windows::Environment& env, const DeviceStateUi* device_state_ui)
     : HorizontalLayout(env),
-      name_(env, "1-Wire:1234567812345678", roo_windows::font_subtitle1()),
+      id_(env, "1-Wire:1234567812345678", roo_windows::font_subtitle1()),
       reading_(device_state_ui->creator_fn()),
       device_state_ui_(device_state_ui) {
   setGravity(roo_windows::Gravity(roo_windows::kHorizontalGravityNone,
                                   roo_windows::kVerticalGravityMiddle));
-  name_.setMargins(roo_windows::MARGIN_NONE);
-  name_.setPadding(roo_windows::PADDING_SMALL);
-  add(name_, HorizontalLayout::Params().setWeight(1));
+  id_.setMargins(roo_windows::MARGIN_NONE);
+  id_.setPadding(roo_windows::PADDING_SMALL);
+  add(id_, HorizontalLayout::Params().setWeight(1));
   add(*reading_);
 }
 
 UnassignedThermometerRadioGroupItem::UnassignedThermometerRadioGroupItem(
     const UnassignedThermometerRadioGroupItem& other)
     : HorizontalLayout(other),
-      name_(other.name_),
+      id_(other.id_),
       device_state_ui_(other.device_state_ui_) {
   reading_ = device_state_ui_->creator_fn();
-  add(name_);
+  add(id_);
   add(*reading_);
 }
 
 void UnassignedThermometerRadioGroupItem::set(std::string id) {
   device_state_ui_->setter_fn(id, *reading_);
-  name_.setText(std::move(id));
+  id_.setText(std::move(id));
 }
 
 int UnassignedThermometerRadioGroupModel::elementCount() const {
@@ -44,7 +44,7 @@ int UnassignedThermometerRadioGroupModel::elementCount() const {
 
 void UnassignedThermometerRadioGroupModel::set(
     int idx, UnassignedThermometerRadioGroupItem& dest) const {
-  dest.set(std::string(model_.unassignedItemName(idx)));
+  dest.set(std::string(model_.unassignedItemId(idx)));
 }
 
 UnassignedThermometerSelectionDialog::UnassignedThermometerSelectionDialog(
@@ -73,7 +73,7 @@ void UnassignedThermometerSelectionDialog::sensorsChanged() {
   if (s >= 0) {
     // Update the selection to stick to the originally selected rom code.
     for (size_t i = 0; i < model_.unassignedItemCount(); ++i) {
-      if (model_.unassignedItemName(i) == selected_device_id_) {
+      if (model_.unassignedItemId(i) == selected_device_id_) {
         // Found!
         new_s = i;
         break;
@@ -91,7 +91,7 @@ void UnassignedThermometerSelectionDialog::newReadingsAvailable() {
 void UnassignedThermometerSelectionDialog::onChange() {
   int s = selected();
   selected_device_id_ =
-      (s >= 0) ? std::string(model_.unassignedItemName(s)) : std::string();
+      (s >= 0) ? std::string(model_.unassignedItemId(s)) : std::string();
   RadioListDialog::onChange();
 }
 
