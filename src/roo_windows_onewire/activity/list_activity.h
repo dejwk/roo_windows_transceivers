@@ -29,7 +29,7 @@ class ThermometerListItem : public roo_windows::HorizontalLayout {
  public:
   ThermometerListItem(
       const roo_windows::Environment& env, ThermometerSelectedFn on_click,
-      const Model::DisplayValueCreator& display_value_creator);
+      const DeviceStateUi* device_state_ui);
 
   ThermometerListItem(const ThermometerListItem& other);
 
@@ -55,7 +55,7 @@ class ThermometerListItem : public roo_windows::HorizontalLayout {
   std::unique_ptr<Widget> reading_;
   // roo_windows::Icon lock_icon_;
   ThermometerSelectedFn on_click_;
-  const Model::DisplayValueCreator& display_value_creator_;
+  const DeviceStateUi* device_state_ui_;
 };
 
 class ThermometerListModel

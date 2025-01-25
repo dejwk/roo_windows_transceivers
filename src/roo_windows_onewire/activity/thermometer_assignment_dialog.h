@@ -3,6 +3,7 @@
 #include <string>
 
 #include "roo_windows/composites/radio/radio_list.h"
+#include "roo_windows/containers/holder.h"
 #include "roo_windows/containers/list_layout.h"
 #include "roo_windows/dialogs/dialog.h"
 #include "roo_windows/dialogs/radio_list_dialog.h"
@@ -13,16 +14,19 @@ namespace roo_windows_onewire {
 class UnassignedThermometerRadioGroupItem
     : public roo_windows::HorizontalLayout {
  public:
-  UnassignedThermometerRadioGroupItem(const roo_windows::Environment& env);
+  UnassignedThermometerRadioGroupItem(
+      const roo_windows::Environment& env,
+      const DeviceStateUi* device_state_ui);
 
   UnassignedThermometerRadioGroupItem(
       const UnassignedThermometerRadioGroupItem& other);
 
-  void set(std::string rom_code, std::string reading);
+  void set(std::string name, roo_control::UniversalDeviceId id);
 
  private:
-  roo_windows::TextLabel rom_code_;
-  roo_windows::TextLabel reading_;
+  roo_windows::TextLabel name_;
+  roo_windows::Holder reading_;
+  const DeviceStateUi* device_state_ui_;
 };
 
 class UnassignedThermometerRadioGroupModel

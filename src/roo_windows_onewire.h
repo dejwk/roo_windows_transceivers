@@ -17,7 +17,8 @@ class Configurator {
   Configurator(const roo_windows::Environment& env,
                roo_control::SensorUniverse& sensors,
                std::vector<ModelItem> bindings)
-      : model_(sensors, std::move(bindings)),
+      : widget_state_ui_(TemperatureWidgetSetter(&env, &sensors)),
+        model_(sensors, std::move(bindings), widget_state_ui_),
         list_(env, env.scheduler(), model_,
               [this](roo_windows::Task& task, int idx) {
                 thermometerSelected(task, idx);
@@ -61,6 +62,7 @@ class Configurator {
         });
   }
 
+  DeviceStateUi widget_state_ui_;
   Model model_;
   ListActivity list_;
   ThermometerDetailsActivity details_;

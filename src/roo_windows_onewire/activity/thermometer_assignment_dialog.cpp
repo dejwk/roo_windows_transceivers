@@ -6,35 +6,37 @@
 using roo_windows::Dialog;
 
 // using roo_onewire::ThermometerRoles;
-
 namespace roo_windows_onewire {
 
 UnassignedThermometerRadioGroupItem::UnassignedThermometerRadioGroupItem(
-    const roo_windows::Environment& env)
+    const roo_windows::Environment& env, const DeviceStateUi* device_state_ui)
     : HorizontalLayout(env),
-      rom_code_(env, "1-Wire:1234567812345678", roo_windows::font_subtitle1()),
-      reading_(env, "00.0°C", roo_windows::font_subtitle1()) {
+      name_(env, "1-Wire:1234567812345678", roo_windows::font_subtitle1()),
+      reading_(env, device_state_ui->creator_fn()),
+      device_state_ui_(device_state_ui) {
   setGravity(roo_windows::Gravity(roo_windows::kHorizontalGravityNone,
                                   roo_windows::kVerticalGravityMiddle));
-  rom_code_.setMargins(roo_windows::MARGIN_NONE);
-  rom_code_.setPadding(roo_windows::PADDING_SMALL);
-  add(rom_code_, HorizontalLayout::Params().setWeight(1));
+  name_.setMargins(roo_windows::MARGIN_NONE);
+  name_.setPadding(roo_windows::PADDING_SMALL);
+  add(name_, HorizontalLayout::Params().setWeight(1));
   add(reading_);
 }
 
 UnassignedThermometerRadioGroupItem::UnassignedThermometerRadioGroupItem(
     const UnassignedThermometerRadioGroupItem& other)
     : HorizontalLayout(other),
-      rom_code_(other.rom_code_),
-      reading_(other.reading_) {
-  add(rom_code_);
+      name_(other.name_),
+      reading_(other.reading_),
+      device_state_ui_(other.device_state_ui_) {
+  reading_.setContents(device_state_ui_->creator_fn());
+  add(name_);
   add(reading_);
 }
 
-void UnassignedThermometerRadioGroupItem::set(std::string rom_code,
-                                              std::string reading) {
-  rom_code_.setText(std::move(rom_code));
-  reading_.setText(std::move(reading));
+void UnassignedThermometerRadioGroupItem::set(
+    std::string name, roo_control::UniversalDeviceId id) {
+  name_.setText(std::move(name));
+  device_state_ui_->setter_fn(id, *reading_.contents());
 }
 
 int UnassignedThermometerRadioGroupModel::elementCount() const {
@@ -46,20 +48,13 @@ void UnassignedThermometerRadioGroupModel::set(
     int idx, UnassignedThermometerRadioGroupItem& dest) const {
   const roo_control::UniversalDeviceId id = model_.unassigned_sensors()[idx];
   std::string label = model_.sensors().sensorUserFriendlyName(id);
-  roo_control::Measurement m = model_.sensors().read(id);
-  CHECK_EQ(roo_control_Quantity_kTemperature, m.quantity());
-  std::string reading;
-  if (m.isUnknown() || m.value() >= 85 || m.value() <= -55) {
-    reading = "";
-  } else {
-    reading = roo_display::StringPrintf("%2.1f°C", m.value());
-  }
-  dest.set(label, std::move(reading));
+  dest.set(label, id);
 }
 
 UnassignedThermometerSelectionDialog::UnassignedThermometerSelectionDialog(
     const roo_windows::Environment& env, Model& model)
-    : roo_windows::RadioListDialog<UnassignedThermometerRadioGroupModel>(env),
+    : roo_windows::RadioListDialog<UnassignedThermometerRadioGroupModel>(
+          env, UnassignedThermometerRadioGroupItem(env, model.state_ui())),
       model_(model),
       list_model_(model) {
   setTitle(kStrSelectThermometer);

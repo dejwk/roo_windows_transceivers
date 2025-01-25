@@ -19,26 +19,45 @@ struct ModelItem {
   std::string label;
 };
 
+struct DeviceStateUi {
+  roo_windows::WidgetCreatorFn creator_fn;
+  roo_windows::WidgetSetterFn<roo_control::UniversalDeviceId> setter_fn;
+};
+
+// TODO: refactor inline.
+inline DeviceStateUi TemperatureWidgetSetter(
+    const roo_windows::Environment* env,
+    const roo_control::SensorUniverse* sensor_universe) {
+  return DeviceStateUi{
+      .creator_fn =
+          [env]() {
+            return std::unique_ptr<roo_windows::Widget>(
+                new roo_windows::TextLabel(*env, "",
+                                           roo_windows::font_subtitle1()));
+          },
+      .setter_fn =
+          [sensor_universe](roo_control::UniversalDeviceId id,
+                            roo_windows::Widget& dest) {
+            roo_control::Measurement m = sensor_universe->read(id);
+            auto& label = (roo_windows::TextLabel&)dest;
+            if (!m.isDefined()) {
+              label.setText("");
+            } else {
+              // if (m.value() >= 85 || m.value() <= -55) {
+              //   label.setTextf("");
+              // } else {
+              CHECK_EQ(roo_control_Quantity_kTemperature, m.quantity());
+              label.setTextf("%3.1f°C", m.value());
+              // }
+            }
+          }};
+}
+
 class Model : public roo_control::SensorEventListener {
  public:
-  Model(roo_control::SensorUniverse& sensors, std::vector<ModelItem> bindings)
-      : sensors_(sensors),
-        bindings_(bindings),
-        value_display_creator_([](const roo_windows::Environment& env) {
-          return std::unique_ptr<roo_windows::Widget>(
-              new roo_windows::TextLabel(env, "",
-                                         roo_windows::font_subtitle1()));
-        }),
-        value_display_setter_(
-            [](roo_windows::Widget& target, const roo_control::Measurement& m) {
-              auto& label = (roo_windows::TextLabel&)target;
-              if (!m.isDefined()) {
-                label.setText("");
-              } else {
-                CHECK_EQ(roo_control_Quantity_kTemperature, m.quantity());
-                label.setTextf("%3.1f°C", m.value());
-              }
-            }) {
+  Model(roo_control::SensorUniverse& sensors, std::vector<ModelItem> bindings,
+        DeviceStateUi& state_ui)
+      : sensors_(sensors), bindings_(bindings), state_ui_(state_ui) {
     sensors_.addEventListener(this);
   }
 
@@ -104,18 +123,7 @@ class Model : public roo_control::SensorEventListener {
     }
   }
 
-  using DisplayValueCreator =
-      std::function<std::unique_ptr<roo_windows::Widget>(
-          const roo_windows::Environment&)>;
-
-  const DisplayValueCreator& getDisplayValueCreator() const {
-    return value_display_creator_;
-  }
-
-  void setDisplayValue(roo_windows::Widget& target,
-                       const roo_control::Measurement& m) const {
-    value_display_setter_(target, m);
-  }
+  const DeviceStateUi* state_ui() const { return &state_ui_; }
 
  private:
   // Zero-initialized integer.
@@ -162,13 +170,7 @@ class Model : public roo_control::SensorEventListener {
   std::vector<roo_control::UniversalDeviceId> all_sensors_;
   std::vector<roo_control::UniversalDeviceId> unassigned_sensors_;
 
-  std::function<std::unique_ptr<roo_windows::Widget>(
-      const roo_windows::Environment&)>
-      value_display_creator_;
-
-  std::function<void(roo_windows::Widget& target,
-                     const roo_control::Measurement& m)>
-      value_display_setter_;
+  DeviceStateUi& state_ui_;
 };
 
 }  // namespace roo_windows_onewire
