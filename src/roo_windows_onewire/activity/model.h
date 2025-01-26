@@ -24,19 +24,32 @@ struct DeviceStateUi {
   roo_windows::WidgetSetterFn<roo_io::string_view> setter_fn;
 };
 
-class Model;
-
-DeviceStateUi TemperatureWidgetSetter(
-    const roo_windows::Environment* env,
-    const roo_control::SensorUniverse* sensor_universe, Model& model);
-
 class Model : public roo_control::SensorEventListener {
  public:
   Model(const roo_windows::Environment* env,
         roo_control::SensorUniverse& sensors, std::vector<ModelItem> bindings)
-      : sensors_(sensors),
-        bindings_(bindings),
-        state_ui_(TemperatureWidgetSetter(env, &sensors, *this)) {
+      : sensors_(sensors), bindings_(bindings) {
+    // state_ui_(TemperatureWidgetSetter(env, &sensors, *this)) {
+    state_ui_.creator_fn = [env]() {
+      return std::unique_ptr<roo_windows::Widget>(
+          new roo_windows::TextLabel(*env, "", roo_windows::font_subtitle1()));
+    };
+    state_ui_.setter_fn = [this](roo_io::string_view id,
+                                 roo_windows::Widget& dest) {
+      roo_control::UniversalDeviceId device_id = deviceIdFromName(id);
+      roo_control::Measurement m = sensors_.read(device_id);
+      auto& label = (roo_windows::TextLabel&)dest;
+      if (!m.isDefined()) {
+        label.setText("");
+      } else {
+        // if (m.value() >= 85 || m.value() <= -55) {
+        //   label.setTextf("");
+        // } else {
+        CHECK_EQ(roo_control_Quantity_kTemperature, m.quantity());
+        label.setTextf("%3.1f°C", m.value());
+        // }
+      }
+    };
     sensors_.addEventListener(this);
   }
 
@@ -47,9 +60,7 @@ class Model : public roo_control::SensorEventListener {
 
   Model& operator=(const Model& m) = delete;
 
-  void requestUpdate() {
-    sensors_.requestUpdate();
-  }
+  void requestUpdate() { sensors_.requestUpdate(); }
 
   size_t binding_count() const { return bindings_.size(); }
 
@@ -57,17 +68,19 @@ class Model : public roo_control::SensorEventListener {
     return bindings_[idx].label;
   }
 
+  roo_io::string_view getBinding(int idx) const { return binding_ids_[idx]; }
+
   void bind(int idx, roo_io::string_view id) {
     bindings_[idx].binding.bind(item_id_mapping_[id]);
+    binding_ids_[idx] = std::string(id);
   }
 
-  void unbind(int idx) { bindings_[idx].binding.unbind(); }
+  void unbind(int idx) {
+    bindings_[idx].binding.unbind();
+    binding_ids_[idx] = "";
+  }
 
   bool isBound(int idx) const { return bindings_[idx].binding.isBound(); }
-
-  std::string getBinding(int idx) const {
-    return sensors_.sensorUserFriendlyName(bindings_[idx].binding.get());
-  }
 
   void addEventListener(SensorEventListener* listener) {
     auto result = event_listeners_.insert(listener);
@@ -129,13 +142,19 @@ class Model : public roo_control::SensorEventListener {
   void updateSensors() {
     all_sensors_.clear();
     all_item_ids_.clear();
+    binding_ids_.clear();
     unassigned_sensors_.clear();
     item_id_mapping_.clear();
 
     binding_counts_.clear();
     for (size_t i = 0; i < bindings_.size(); ++i) {
       roo_control::UniversalDeviceId id = bindings_[i].binding.get();
-      if (!id.isDefined()) continue;
+      if (!id.isDefined()) {
+        binding_ids_.push_back("");
+        continue;
+      }
+      binding_ids_.push_back(
+          sensors_.sensorUserFriendlyName(bindings_[i].binding.get()));
       binding_counts_[id].increment();
     }
 
@@ -167,6 +186,7 @@ class Model : public roo_control::SensorEventListener {
 
   std::vector<roo_control::UniversalDeviceId> all_sensors_;
   std::vector<std::string> all_item_ids_;
+  std::vector<std::string> binding_ids_;
   std::vector<size_t> unassigned_sensors_;
 
   roo_collections::FlatSmallHashMap<roo_io::string_view,
@@ -175,34 +195,5 @@ class Model : public roo_control::SensorEventListener {
 
   DeviceStateUi state_ui_;
 };
-
-inline DeviceStateUi TemperatureWidgetSetter(
-    const roo_windows::Environment* env,
-    const roo_control::SensorUniverse* sensor_universe, Model& model) {
-  return DeviceStateUi{
-      .creator_fn =
-          [env]() {
-            return std::unique_ptr<roo_windows::Widget>(
-                new roo_windows::TextLabel(*env, "",
-                                           roo_windows::font_subtitle1()));
-          },
-      .setter_fn =
-          [sensor_universe, &model](roo_io::string_view id,
-                                    roo_windows::Widget& dest) {
-            roo_control::UniversalDeviceId device_id = model.deviceIdFromName(id);
-            roo_control::Measurement m = sensor_universe->read(device_id);
-            auto& label = (roo_windows::TextLabel&)dest;
-            if (!m.isDefined()) {
-              label.setText("");
-            } else {
-              // if (m.value() >= 85 || m.value() <= -55) {
-              //   label.setTextf("");
-              // } else {
-              CHECK_EQ(roo_control_Quantity_kTemperature, m.quantity());
-              label.setTextf("%3.1f°C", m.value());
-              // }
-            }
-          }};
-}
 
 }  // namespace roo_windows_onewire
