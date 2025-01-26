@@ -24,19 +24,75 @@ struct DeviceStateUi {
   roo_windows::WidgetSetterFn<roo_io::string_view> setter_fn;
 };
 
-class Model : public roo_control::SensorEventListener {
+class Model {
  public:
-  Model(const roo_windows::Environment* env,
-        roo_control::SensorUniverse& sensors, std::vector<ModelItem> bindings)
+  class EventListener {
+   public:
+    virtual ~EventListener() = default;
+
+    virtual void itemsChanged() {}
+    virtual void measurementsChanged() {}
+  };
+
+  virtual ~Model() = default;
+
+  virtual void requestUpdate() = 0;
+
+  virtual size_t getItemCount() const = 0;
+  virtual roo_io::string_view getItemId(size_t idx) = 0;
+
+  virtual size_t getBindingCount() const = 0;
+  virtual roo_io::string_view getBindingLabel(size_t idx) const = 0;
+  virtual roo_io::string_view getBindingItemId(size_t idx) const = 0;
+  virtual bool isBound(size_t idx) const = 0;
+
+  virtual void bind(size_t idx, roo_io::string_view item_id) = 0;
+  virtual void unbind(size_t idx) = 0;
+
+  virtual const DeviceStateUi* state_ui() const = 0;
+
+  void addEventListener(EventListener* listener) {
+    auto result = event_listeners_.insert(listener);
+    CHECK(result.second) << "Event listener " << listener
+                         << " was registered already.";
+  }
+
+  void removeEventListener(EventListener* listener) {
+    event_listeners_.erase(listener);
+  }
+
+ protected:
+  void notifyItemsChanged() {
+    for (auto& listener : event_listeners_) {
+      listener->itemsChanged();
+    }
+  }
+
+  void notifyMeasurementsChanged() {
+    for (auto& listener : event_listeners_) {
+      listener->measurementsChanged();
+    }
+  }
+
+ private:
+  roo_collections::FlatSmallHashSet<EventListener*> event_listeners_;
+};
+
+class ThermometerSelectorModel : public roo_control::SensorEventListener,
+                                 public Model {
+ public:
+  ThermometerSelectorModel(const roo_windows::Environment* env,
+                           roo_control::SensorUniverse& sensors,
+                           std::vector<ModelItem> bindings)
       : sensors_(sensors), bindings_(bindings) {
     // state_ui_(TemperatureWidgetSetter(env, &sensors, *this)) {
     state_ui_.creator_fn = [env]() {
       return std::unique_ptr<roo_windows::Widget>(
           new roo_windows::TextLabel(*env, "", roo_windows::font_subtitle1()));
     };
-    state_ui_.setter_fn = [this](roo_io::string_view id,
+    state_ui_.setter_fn = [this](roo_io::string_view item_id,
                                  roo_windows::Widget& dest) {
-      roo_control::UniversalDeviceId device_id = deviceIdFromName(id);
+      roo_control::UniversalDeviceId device_id = deviceIdFromItemId(item_id);
       roo_control::Measurement m = sensors_.read(device_id);
       auto& label = (roo_windows::TextLabel&)dest;
       if (!m.isDefined()) {
@@ -53,82 +109,60 @@ class Model : public roo_control::SensorEventListener {
     sensors_.addEventListener(this);
   }
 
-  ~Model() { sensors_.removeEventListener(this); }
+  ~ThermometerSelectorModel() { sensors_.removeEventListener(this); }
 
-  Model(const Model&) = delete;
-  Model(Model&&) = delete;
+  ThermometerSelectorModel(const ThermometerSelectorModel&) = delete;
+  ThermometerSelectorModel(ThermometerSelectorModel&&) = delete;
 
-  Model& operator=(const Model& m) = delete;
+  ThermometerSelectorModel& operator=(const ThermometerSelectorModel& m) =
+      delete;
 
-  void requestUpdate() { sensors_.requestUpdate(); }
+  void requestUpdate() override { sensors_.requestUpdate(); }
 
-  size_t binding_count() const { return bindings_.size(); }
+  size_t getBindingCount() const override { return bindings_.size(); }
 
-  roo_io::string_view binding_label(int idx) const {
+  roo_io::string_view getBindingLabel(size_t idx) const override {
     return bindings_[idx].label;
   }
 
-  roo_io::string_view getBinding(int idx) const { return binding_ids_[idx]; }
-
-  void bind(int idx, roo_io::string_view id) {
-    bindings_[idx].binding.bind(item_id_mapping_[id]);
-    binding_ids_[idx] = std::string(id);
+  roo_io::string_view getBindingItemId(size_t idx) const override {
+    return binding_ids_[idx];
   }
 
-  void unbind(int idx) {
+  void bind(size_t idx, roo_io::string_view item_id) override {
+    bindings_[idx].binding.bind(item_id_mapping_[item_id]);
+    binding_ids_[idx] = std::string(item_id);
+  }
+
+  void unbind(size_t idx) override {
     bindings_[idx].binding.unbind();
     binding_ids_[idx] = "";
   }
 
-  bool isBound(int idx) const { return bindings_[idx].binding.isBound(); }
-
-  void addEventListener(SensorEventListener* listener) {
-    auto result = event_listeners_.insert(listener);
-    CHECK(result.second) << "Event listener " << listener
-                         << " was registered already.";
+  bool isBound(size_t idx) const override {
+    return bindings_[idx].binding.isBound();
   }
 
-  void removeEventListener(SensorEventListener* listener) {
-    event_listeners_.erase(listener);
+  size_t getItemCount() const override { return all_sensors_.size(); }
+
+  roo_io::string_view getItemId(size_t idx) override {
+    return all_item_ids_[idx];
   }
 
-  size_t availableItemCount() const { return all_sensors_.size(); }
+  size_t getUnassignedItemCount() const { return unassigned_sensors_.size(); }
 
-  roo_io::string_view availableItemId(size_t idx) { return all_item_ids_[idx]; }
-
-  roo_control::UniversalDeviceId deviceIdFromName(
-      roo_io::string_view id) const {
-    auto itr = item_id_mapping_.find(id);
-    if (itr == item_id_mapping_.end()) {
-      return roo_control::UniversalDeviceId();
-    }
-    return itr->second;
-  }
-
-  size_t unassignedItemCount() const { return unassigned_sensors_.size(); }
-
-  roo_io::string_view unassignedItemId(size_t idx) const {
+  roo_io::string_view getUnassignedItemId(size_t idx) const {
     return all_item_ids_[unassigned_sensors_[idx]];
-  }
-
-  size_t unassignedItemIdx(size_t idx) const {
-    return unassigned_sensors_[idx];
   }
 
   void sensorsChanged() override {
     updateSensors();
-    for (auto& listener : event_listeners_) {
-      listener->sensorsChanged();
-    }
+    notifyItemsChanged();
   }
 
-  void newReadingsAvailable() override {
-    for (auto& listener : event_listeners_) {
-      listener->newReadingsAvailable();
-    }
-  }
+  void newReadingsAvailable() override { notifyMeasurementsChanged(); }
 
-  const DeviceStateUi* state_ui() const { return &state_ui_; }
+  const DeviceStateUi* state_ui() const override { return &state_ui_; }
 
  private:
   // Zero-initialized integer.
@@ -176,10 +210,17 @@ class Model : public roo_control::SensorEventListener {
     }
   }
 
+  roo_control::UniversalDeviceId deviceIdFromItemId(
+      roo_io::string_view item_id) const {
+    auto itr = item_id_mapping_.find(item_id);
+    if (itr == item_id_mapping_.end()) {
+      return roo_control::UniversalDeviceId();
+    }
+    return itr->second;
+  }
+
   roo_control::SensorUniverse& sensors_;
   std::vector<ModelItem> bindings_;
-
-  roo_collections::FlatSmallHashSet<SensorEventListener*> event_listeners_;
 
   roo_collections::FlatSmallHashMap<roo_control::UniversalDeviceId, RefCounter>
       binding_counts_;

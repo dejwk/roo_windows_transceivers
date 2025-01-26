@@ -32,32 +32,32 @@ class UnassignedThermometerRadioGroupItem
 class UnassignedThermometerRadioGroupModel
     : public roo_windows::ListModel<UnassignedThermometerRadioGroupItem> {
  public:
-  UnassignedThermometerRadioGroupModel(Model& model) : model_(model) {}
+  UnassignedThermometerRadioGroupModel(ThermometerSelectorModel& model) : model_(model) {}
 
   int elementCount() const override;
   void set(int idx, UnassignedThermometerRadioGroupItem& dest) const override;
 
  private:
-  Model& model_;
+  ThermometerSelectorModel& model_;
 };
 
 class UnassignedThermometerSelectionDialog
     : public roo_windows::RadioListDialog<UnassignedThermometerRadioGroupModel>,
-      public roo_control::SensorEventListener {
+      public Model::EventListener {
  public:
   UnassignedThermometerSelectionDialog(const roo_windows::Environment& env,
-                                       Model& model);
+                                       ThermometerSelectorModel& model);
 
   void onEnter() override;
   void onExit(int result) override;
 
   void onChange() override;
 
-  void sensorsChanged() override;
-  void newReadingsAvailable() override;
+  void itemsChanged() override;
+  void measurementsChanged() override;
 
  private:
-  Model& model_;
+  ThermometerSelectorModel& model_;
   UnassignedThermometerRadioGroupModel list_model_;
   std::string selected_device_id_;
 };

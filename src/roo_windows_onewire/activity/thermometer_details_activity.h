@@ -26,10 +26,10 @@ typedef std::function<void(roo_windows::Task& task, int id)> SelectFn;
 
 class ThermometerDetailsActivityContents
     : public roo_windows::VerticalLayout,
-      public roo_control::SensorEventListener {
+      public Model::EventListener {
  public:
   ThermometerDetailsActivityContents(const roo_windows::Environment& env,
-                                     Model& model,
+                                     ThermometerSelectorModel& model,
                                      std::function<void()> assign_fn,
                                      std::function<void()> unassign_fn)
       : roo_windows::VerticalLayout(env),
@@ -89,11 +89,11 @@ class ThermometerDetailsActivityContents
 
   void enter(int idx) {
     idx_ = idx;
-    name_.setText(model_.binding_label(idx_));
+    name_.setText(model_.getBindingLabel(idx_));
     if (!model_.isBound(idx_)) {
       id_.setText(kStrNotAssigned);
     } else {
-      id_.setText(model_.getBinding(idx_));
+      id_.setText(model_.getBindingItemId(idx_));
     }
   }
 
@@ -103,13 +103,13 @@ class ThermometerDetailsActivityContents
   }
 
   void updateReading() {
-    model_.state_ui()->setter_fn(model_.getBinding(idx_), *reading_);
+    model_.state_ui()->setter_fn(model_.getBindingItemId(idx_), *reading_);
   }
 
  private:
-  void newReadingsAvailable() override { updateReading(); }
+  void measurementsChanged() override { updateReading(); }
 
-  Model& model_;
+  ThermometerSelectorModel& model_;
   int idx_;
   roo_windows::menu::Title title_;
   roo_windows::TextLabel name_;
@@ -123,7 +123,7 @@ class ThermometerDetailsActivityContents
 
 class ThermometerDetailsActivity : public roo_windows::Activity {
  public:
-  ThermometerDetailsActivity(const roo_windows::Environment& env, Model& model,
+  ThermometerDetailsActivity(const roo_windows::Environment& env, ThermometerSelectorModel& model,
                              SelectFn assign_fn, SelectFn unassign_fn)
       : roo_windows::Activity(),
         idx_(),
@@ -158,7 +158,7 @@ class ThermometerDetailsActivity : public roo_windows::Activity {
 
  private:
   int idx_;
-  Model& model_;
+  ThermometerSelectorModel& model_;
   ThermometerDetailsActivityContents contents_;
   roo_windows::ScrollablePanel scrollable_container_;
 };

@@ -39,16 +39,16 @@ void UnassignedThermometerRadioGroupItem::set(std::string id) {
 
 int UnassignedThermometerRadioGroupModel::elementCount() const {
   // return model_.unassigned().size();
-  return model_.unassignedItemCount();
+  return model_.getUnassignedItemCount();
 }
 
 void UnassignedThermometerRadioGroupModel::set(
     int idx, UnassignedThermometerRadioGroupItem& dest) const {
-  dest.set(std::string(model_.unassignedItemId(idx)));
+  dest.set(std::string(model_.getUnassignedItemId(idx)));
 }
 
 UnassignedThermometerSelectionDialog::UnassignedThermometerSelectionDialog(
-    const roo_windows::Environment& env, Model& model)
+    const roo_windows::Environment& env, ThermometerSelectorModel& model)
     : roo_windows::RadioListDialog<UnassignedThermometerRadioGroupModel>(
           env, UnassignedThermometerRadioGroupItem(env, model.state_ui())),
       model_(model),
@@ -67,13 +67,13 @@ void UnassignedThermometerSelectionDialog::onExit(int result) {
   model_.removeEventListener(this);
 }
 
-void UnassignedThermometerSelectionDialog::sensorsChanged() {
+void UnassignedThermometerSelectionDialog::itemsChanged() {
   int s = selected();
   int new_s = -1;
   if (s >= 0) {
     // Update the selection to stick to the originally selected rom code.
-    for (size_t i = 0; i < model_.unassignedItemCount(); ++i) {
-      if (model_.unassignedItemId(i) == selected_device_id_) {
+    for (size_t i = 0; i < model_.getUnassignedItemCount(); ++i) {
+      if (model_.getUnassignedItemId(i) == selected_device_id_) {
         // Found!
         new_s = i;
         break;
@@ -84,14 +84,14 @@ void UnassignedThermometerSelectionDialog::sensorsChanged() {
   setSelected(new_s);
 }
 
-void UnassignedThermometerSelectionDialog::newReadingsAvailable() {
+void UnassignedThermometerSelectionDialog::measurementsChanged() {
   contentsChanged();
 }
 
 void UnassignedThermometerSelectionDialog::onChange() {
   int s = selected();
   selected_device_id_ =
-      (s >= 0) ? std::string(model_.unassignedItemId(s)) : std::string();
+      (s >= 0) ? std::string(model_.getUnassignedItemId(s)) : std::string();
   RadioListDialog::onChange();
 }
 

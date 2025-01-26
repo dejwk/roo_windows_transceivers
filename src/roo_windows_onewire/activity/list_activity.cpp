@@ -40,18 +40,18 @@ ThermometerListItem::ThermometerListItem(const ThermometerListItem& other)
   add(*reading_, HorizontalLayout::Params().setWeight(0));
 }
 
-void ThermometerListItem::set(int idx, const Model& model) {
+void ThermometerListItem::set(int idx, const ThermometerSelectorModel& model) {
   idx_ = idx;
-  id_.setText(model.binding_label(idx_));
+  id_.setText(model.getBindingLabel(idx_));
   // roo_control::Measurement m = model.sensors().read(model.getBinding(idx_));
-  device_state_ui_->setter_fn(model.getBinding(idx_), *reading_);
+  device_state_ui_->setter_fn(model.getBindingItemId(idx_), *reading_);
   thermometer_icon_.setVisibility(model.isBound(idx_) ? VISIBLE : INVISIBLE);
 }
 
-ThermometerListModel::ThermometerListModel(Model& model) : model_(model) {}
+ThermometerListModel::ThermometerListModel(ThermometerSelectorModel& model) : model_(model) {}
 
 int ThermometerListModel::elementCount() const {
-  return model_.binding_count();
+  return model_.getBindingCount();
 }
 
 void ThermometerListModel::set(int idx, ThermometerListItem& dest) const {
@@ -59,7 +59,7 @@ void ThermometerListModel::set(int idx, ThermometerListItem& dest) const {
 }
 
 ListActivity::ListActivity(const roo_windows::Environment& env,
-                           roo_scheduler::Scheduler& scheduler, Model& model,
+                           roo_scheduler::Scheduler& scheduler, ThermometerSelectorModel& model,
                            ThermometerSelectedFn thermometer_selected_fn)
     : model_(model),
       contents_(env, model, thermometer_selected_fn),
@@ -69,7 +69,7 @@ ListActivity::ListActivity(const roo_windows::Environment& env,
           roo_time::Millis(1000)) {}
 
 ListActivityContents::ListActivityContents(
-    const roo_windows::Environment& env, Model& model,
+    const roo_windows::Environment& env, ThermometerSelectorModel& model,
     ThermometerSelectedFn thermometer_selected_fn)
     : VerticalLayout(env),
       model_(model),
@@ -82,7 +82,7 @@ ListActivityContents::ListActivityContents(
   add(list_, VerticalLayout::Params());
 }
 
-void ListActivityContents::newReadingsAvailable() { list_.modelChanged(); }
+void ListActivityContents::measurementsChanged() { list_.modelChanged(); }
 
 void ListActivity::onStart() {
   model_.addEventListener(&contents_);
