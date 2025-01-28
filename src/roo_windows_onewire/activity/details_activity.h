@@ -23,13 +23,13 @@ namespace roo_windows_onewire {
 
 typedef std::function<void(roo_windows::Task& task, int id)> SelectFn;
 
-class ThermometerDetailsActivityContents : public roo_windows::VerticalLayout,
-                                           public Model::EventListener {
+class DetailsActivityContents : public roo_windows::VerticalLayout,
+                                public Model::EventListener {
  public:
-  ThermometerDetailsActivityContents(const roo_windows::Environment& env,
-                                     ThermometerSelectorModel& model,
-                                     std::function<void()> assign_fn,
-                                     std::function<void()> unassign_fn)
+  DetailsActivityContents(const roo_windows::Environment& env,
+                          ThermometerSelectorModel& model,
+                          std::function<void()> assign_fn,
+                          std::function<void()> unassign_fn)
       : roo_windows::VerticalLayout(env),
         model_(model),
         title_(env, model.ui()->labels.item_details_title),
@@ -120,9 +120,9 @@ class ThermometerDetailsActivityContents : public roo_windows::VerticalLayout,
   roo_windows::IconWithCaption button_assign_;
 };
 
-class ThermometerDetailsActivity : public roo_windows::Activity {
+class DetailsActivity : public roo_windows::Activity {
  public:
-  ThermometerDetailsActivity(const roo_windows::Environment& env,
+  DetailsActivity(const roo_windows::Environment& env,
                              ThermometerSelectorModel& model,
                              SelectFn assign_fn, SelectFn unassign_fn)
       : roo_windows::Activity(),
@@ -159,7 +159,7 @@ class ThermometerDetailsActivity : public roo_windows::Activity {
  private:
   int idx_;
   ThermometerSelectorModel& model_;
-  ThermometerDetailsActivityContents contents_;
+  DetailsActivityContents contents_;
   roo_windows::ScrollablePanel scrollable_container_;
 };
 

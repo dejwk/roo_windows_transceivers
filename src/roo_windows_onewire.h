@@ -64,7 +64,7 @@ class Configurator {
   Ui ui_;
   ThermometerSelectorModel model_;
   ListActivity list_;
-  ThermometerDetailsActivity details_;
+  DetailsActivity details_;
   UnassignedItemSelectionDialog assignment_;
 };
 
