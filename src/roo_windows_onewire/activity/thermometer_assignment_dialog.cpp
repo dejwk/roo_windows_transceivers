@@ -1,7 +1,6 @@
 #include "roo_windows_onewire/activity/thermometer_assignment_dialog.h"
 
 #include "roo_display/ui/string_printer.h"
-#include "roo_windows_onewire/activity/resources.h"
 
 using roo_windows::Dialog;
 
@@ -54,7 +53,7 @@ UnassignedThermometerSelectionDialog::UnassignedThermometerSelectionDialog(
           env, UnassignedThermometerRadioGroupItem(env, model.state_ui())),
       model_(model),
       list_model_(model) {
-  setTitle(kStrSelectThermometer);
+  setTitle(model.state_ui()->labels.assign_from_list);
   setModel(list_model_);
 }
 

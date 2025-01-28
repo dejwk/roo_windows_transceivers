@@ -18,15 +18,13 @@
 #include "roo_windows/widgets/icon_with_caption.h"
 #include "roo_windows/widgets/text_field.h"
 #include "roo_windows_onewire/activity/model.h"
-#include "roo_windows_onewire/activity/resources.h"
 
 namespace roo_windows_onewire {
 
 typedef std::function<void(roo_windows::Task& task, int id)> SelectFn;
 
-class ThermometerDetailsActivityContents
-    : public roo_windows::VerticalLayout,
-      public Model::EventListener {
+class ThermometerDetailsActivityContents : public roo_windows::VerticalLayout,
+                                           public Model::EventListener {
  public:
   ThermometerDetailsActivityContents(const roo_windows::Environment& env,
                                      ThermometerSelectorModel& model,
@@ -34,18 +32,19 @@ class ThermometerDetailsActivityContents
                                      std::function<void()> unassign_fn)
       : roo_windows::VerticalLayout(env),
         model_(model),
-        title_(env, kStrThermometerDetails),
+        title_(env, model.state_ui()->labels.item_details_title),
         name_(env, "", roo_windows::font_subtitle1(),
               roo_display::kCenter | roo_display::kMiddle),
         id_(env, "", roo_windows::font_caption(),
-                  roo_display::kCenter | roo_display::kMiddle),
+            roo_display::kCenter | roo_display::kMiddle),
         reading_(model.state_ui()->creator_fn()),
-                //  roo_display::kCenter | roo_display::kMiddle),
+        //  roo_display::kCenter | roo_display::kMiddle),
         d1_(env),
         actions_(env),
         button_unassign_(env, SCALED_ROO_ICON(filled, content_link_off),
-                         kStrUnassign),
-        button_assign_(env, SCALED_ROO_ICON(filled, content_link), kStrAssign) {
+                         model.state_ui()->labels.unassign),
+        button_assign_(env, SCALED_ROO_ICON(filled, content_link),
+                       model.state_ui()->labels.assign) {
     setGravity(roo_windows::Gravity(roo_windows::kHorizontalGravityCenter,
                                     roo_windows::kVerticalGravityMiddle));
     // edit_.setOnInteractiveChange(edit_fn);
@@ -123,7 +122,8 @@ class ThermometerDetailsActivityContents
 
 class ThermometerDetailsActivity : public roo_windows::Activity {
  public:
-  ThermometerDetailsActivity(const roo_windows::Environment& env, ThermometerSelectorModel& model,
+  ThermometerDetailsActivity(const roo_windows::Environment& env,
+                             ThermometerSelectorModel& model,
                              SelectFn assign_fn, SelectFn unassign_fn)
       : roo_windows::Activity(),
         idx_(),

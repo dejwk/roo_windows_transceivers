@@ -12,6 +12,7 @@
 #include "roo_icons/filled/device.h"
 #include "roo_windows/core/widget.h"
 #include "roo_windows/widgets/text_label.h"
+#include "roo_windows_onewire/activity/resources.h"
 
 namespace roo_windows_onewire {
 
@@ -24,6 +25,16 @@ struct DeviceStateUi {
   roo_windows::WidgetCreatorFn creator_fn;
   roo_windows::WidgetSetterFn<roo_io::string_view> setter_fn;
   const roo_display::Pictogram* icon;
+  struct Labels {
+    const char* list_title;
+    const char* item_details_title;
+    const char* assign;
+    const char* unassign;
+    const char* unassign_question;
+    const char* unassign_question_supporting_text;
+    const char* unassigned;
+    const char* assign_from_list;
+  } labels;
 };
 
 class Model {
@@ -109,6 +120,16 @@ class ThermometerSelectorModel : public roo_control::SensorEventListener,
       }
     };
     state_ui_.icon = &SCALED_ROO_ICON(filled, device_thermostat);
+    state_ui_.labels = {
+      .list_title = kStrThermometers,
+      .item_details_title = kStrThermometerDetails,
+      .assign = kStrAssign,
+      .unassign = kStrUnassign,
+      .unassign_question = kStrUnassignQuestion,
+      .unassign_question_supporting_text = kStrUnassignSupportingText,
+      .unassigned = kStrNotAssigned,
+      .assign_from_list = kStrSelectThermometer
+    };
     sensors_.addEventListener(this);
   }
 

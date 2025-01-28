@@ -2,7 +2,6 @@
 
 #include "roo_windows/core/application.h"
 #include "roo_windows_onewire/activity/model.h"
-#include "roo_windows_onewire/activity/resources.h"
 
 namespace roo_windows_onewire {
 
@@ -68,7 +67,7 @@ ListActivityContents::ListActivityContents(
     ItemSelectedFn thermometer_selected_fn)
     : VerticalLayout(env),
       model_(model),
-      title_(env, kStrThermometers),
+      title_(env, model.state_ui()->labels.list_title),
       list_model_(model),
       list_(env, list_model_,
             ListItem(env, thermometer_selected_fn, model.state_ui())) {
