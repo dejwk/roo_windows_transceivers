@@ -44,7 +44,8 @@ int UnassignedThermometerRadioGroupModel::elementCount() const {
 
 void UnassignedThermometerRadioGroupModel::set(
     int idx, UnassignedThermometerRadioGroupItem& dest) const {
-  dest.set(std::string(model_.getUnassignedItemId(idx)));
+  roo_io::string_view v = model_.getUnassignedItemId(idx);
+  dest.set(std::string(v.data(), v.size()));
 }
 
 UnassignedThermometerSelectionDialog::UnassignedThermometerSelectionDialog(
@@ -90,8 +91,11 @@ void UnassignedThermometerSelectionDialog::measurementsChanged() {
 
 void UnassignedThermometerSelectionDialog::onChange() {
   int s = selected();
-  selected_device_id_ =
-      (s >= 0) ? std::string(model_.getUnassignedItemId(s)) : std::string();
+  selected_device_id_ = "";
+  if (s >= 0) {
+    roo_io::string_view v = model_.getUnassignedItemId(s);
+    selected_device_id_ = std::string(v.data(), v.size());
+  }
   RadioListDialog::onChange();
 }
 
