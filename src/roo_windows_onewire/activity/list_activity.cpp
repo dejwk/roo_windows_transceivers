@@ -6,9 +6,8 @@
 
 namespace roo_windows_onewire {
 
-ListItem::ListItem(const roo_windows::Environment& env,
-                                         ItemSelectedFn on_click,
-                                         const DeviceStateUi* device_state_ui)
+ListItem::ListItem(const roo_windows::Environment& env, ItemSelectedFn on_click,
+                   const DeviceStateUi* device_state_ui)
     : HorizontalLayout(env),
       thermometer_icon_(env, *device_state_ui->icon),
       id_(env, "", roo_windows::font_subtitle1()),
@@ -40,7 +39,7 @@ ListItem::ListItem(const ListItem& other)
   add(*reading_, HorizontalLayout::Params().setWeight(0));
 }
 
-void ListItem::set(int idx, const ThermometerSelectorModel& model) {
+void ListItem::set(int idx, const Model& model) {
   idx_ = idx;
   id_.setText(model.getBindingLabel(idx_));
   // roo_control::Measurement m = model.sensors().read(model.getBinding(idx_));
@@ -48,18 +47,14 @@ void ListItem::set(int idx, const ThermometerSelectorModel& model) {
   thermometer_icon_.setVisibility(model.isBound(idx_) ? VISIBLE : INVISIBLE);
 }
 
-ListModel::ListModel(ThermometerSelectorModel& model) : model_(model) {}
+ListModel::ListModel(Model& model) : model_(model) {}
 
-int ListModel::elementCount() const {
-  return model_.getBindingCount();
-}
+int ListModel::elementCount() const { return model_.getBindingCount(); }
 
-void ListModel::set(int idx, ListItem& dest) const {
-  dest.set(idx, model_);
-}
+void ListModel::set(int idx, ListItem& dest) const { dest.set(idx, model_); }
 
 ListActivity::ListActivity(const roo_windows::Environment& env,
-                           roo_scheduler::Scheduler& scheduler, ThermometerSelectorModel& model,
+                           roo_scheduler::Scheduler& scheduler, Model& model,
                            ItemSelectedFn thermometer_selected_fn)
     : model_(model),
       contents_(env, model, thermometer_selected_fn),
@@ -69,15 +64,14 @@ ListActivity::ListActivity(const roo_windows::Environment& env,
           roo_time::Millis(1000)) {}
 
 ListActivityContents::ListActivityContents(
-    const roo_windows::Environment& env, ThermometerSelectorModel& model,
+    const roo_windows::Environment& env, Model& model,
     ItemSelectedFn thermometer_selected_fn)
     : VerticalLayout(env),
       model_(model),
       title_(env, kStrThermometers),
       list_model_(model),
-      list_(
-          env, list_model_,
-          ListItem(env, thermometer_selected_fn, model.state_ui())) {
+      list_(env, list_model_,
+            ListItem(env, thermometer_selected_fn, model.state_ui())) {
   add(title_);
   add(list_, VerticalLayout::Params());
 }

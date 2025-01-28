@@ -22,20 +22,18 @@
 
 namespace roo_windows_onewire {
 
-typedef std::function<void(roo_windows::Task& task, int id)>
-    ItemSelectedFn;
+typedef std::function<void(roo_windows::Task& task, int id)> ItemSelectedFn;
 
 class ListItem : public roo_windows::HorizontalLayout {
  public:
-  ListItem(
-      const roo_windows::Environment& env, ItemSelectedFn on_click,
-      const DeviceStateUi* device_state_ui);
+  ListItem(const roo_windows::Environment& env, ItemSelectedFn on_click,
+           const DeviceStateUi* device_state_ui);
 
   ListItem(const ListItem& other);
 
   bool isClickable() const override { return true; }
 
-  void set(int idx, const ThermometerSelectorModel& model);
+  void set(int idx, const Model& model);
 
   roo_windows::PreferredSize getPreferredSize() const override {
     return roo_windows::PreferredSize(
@@ -58,16 +56,15 @@ class ListItem : public roo_windows::HorizontalLayout {
   const DeviceStateUi* device_state_ui_;
 };
 
-class ListModel
-    : public roo_windows::ListModel<ListItem> {
+class ListModel : public roo_windows::ListModel<ListItem> {
  public:
-  ListModel(ThermometerSelectorModel& model);
+  ListModel(Model& model);
 
   int elementCount() const override;
   void set(int idx, ListItem& dest) const override;
 
  private:
-  ThermometerSelectorModel& model_;
+  Model& model_;
 };
 
 // The list of WiFi networks.
@@ -80,7 +77,7 @@ class List : public roo_windows::ListLayout<ListItem> {
 class ListActivityContents : public roo_windows::VerticalLayout,
                              public Model::EventListener {
  public:
-  ListActivityContents(const roo_windows::Environment& env, ThermometerSelectorModel& model,
+  ListActivityContents(const roo_windows::Environment& env, Model& model,
                        ItemSelectedFn thermometer_selected_fn);
 
   roo_windows::PreferredSize getPreferredSize() const override {
@@ -94,7 +91,7 @@ class ListActivityContents : public roo_windows::VerticalLayout,
  private:
   void measurementsChanged() override;
 
-  ThermometerSelectorModel& model_;
+  Model& model_;
   roo_windows::menu::Title title_;
   ListModel list_model_;
   List list_;
@@ -103,7 +100,7 @@ class ListActivityContents : public roo_windows::VerticalLayout,
 class ListActivity : public roo_windows::Activity {
  public:
   ListActivity(const roo_windows::Environment& env,
-               roo_scheduler::Scheduler& scheduler, ThermometerSelectorModel& model,
+               roo_scheduler::Scheduler& scheduler, Model& model,
                ItemSelectedFn network_selected_fn);
 
   roo_windows::Widget& getContents() override { return scrollable_container_; }
@@ -114,7 +111,7 @@ class ListActivity : public roo_windows::Activity {
   void onResume() override { contents_.update(); }
 
  private:
-  ThermometerSelectorModel& model_;
+  Model& model_;
 
   ListActivityContents contents_;
   roo_windows::ScrollablePanel scrollable_container_;
