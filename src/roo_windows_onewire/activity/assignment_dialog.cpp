@@ -4,7 +4,7 @@ using roo_windows::Dialog;
 
 namespace roo_windows_onewire {
 
-UnassignedThermometerRadioGroupItem::UnassignedThermometerRadioGroupItem(
+UnassignedRadioGroupItem::UnassignedRadioGroupItem(
     const roo_windows::Environment& env, const Ui* ui)
     : HorizontalLayout(env),
       id_(env, "1-Wire:1234567812345678", roo_windows::font_subtitle1()),
@@ -18,51 +18,51 @@ UnassignedThermometerRadioGroupItem::UnassignedThermometerRadioGroupItem(
   add(*reading_);
 }
 
-UnassignedThermometerRadioGroupItem::UnassignedThermometerRadioGroupItem(
-    const UnassignedThermometerRadioGroupItem& other)
+UnassignedRadioGroupItem::UnassignedRadioGroupItem(
+    const UnassignedRadioGroupItem& other)
     : HorizontalLayout(other), id_(other.id_), ui_(other.ui_) {
   reading_ = ui_->widget_creator_fn();
   add(id_);
   add(*reading_);
 }
 
-void UnassignedThermometerRadioGroupItem::set(std::string id) {
+void UnassignedRadioGroupItem::set(std::string id) {
   ui_->widget_setter_fn(id, *reading_);
   id_.setText(std::move(id));
 }
 
-int UnassignedThermometerRadioGroupModel::elementCount() const {
+int UnassignedRadioGroupModel::elementCount() const {
   // return model_.unassigned().size();
   return model_.getUnassignedItemCount();
 }
 
-void UnassignedThermometerRadioGroupModel::set(
-    int idx, UnassignedThermometerRadioGroupItem& dest) const {
+void UnassignedRadioGroupModel::set(int idx,
+                                    UnassignedRadioGroupItem& dest) const {
   roo_io::string_view v = model_.getUnassignedItemId(idx);
   dest.set(std::string(v.data(), v.size()));
 }
 
-UnassignedThermometerSelectionDialog::UnassignedThermometerSelectionDialog(
+UnassignedItemSelectionDialog::UnassignedItemSelectionDialog(
     const roo_windows::Environment& env, ThermometerSelectorModel& model)
-    : roo_windows::RadioListDialog<UnassignedThermometerRadioGroupModel>(
-          env, UnassignedThermometerRadioGroupItem(env, model.ui())),
+    : roo_windows::RadioListDialog<UnassignedRadioGroupModel>(
+          env, UnassignedRadioGroupItem(env, model.ui())),
       model_(model),
       list_model_(model) {
   setTitle(model.ui()->labels.assign_from_list);
   setModel(list_model_);
 }
 
-void UnassignedThermometerSelectionDialog::onEnter() {
+void UnassignedItemSelectionDialog::onEnter() {
   model_.addEventListener(this);
   model_.requestUpdate();
   reset();
 }
 
-void UnassignedThermometerSelectionDialog::onExit(int result) {
+void UnassignedItemSelectionDialog::onExit(int result) {
   model_.removeEventListener(this);
 }
 
-void UnassignedThermometerSelectionDialog::itemsChanged() {
+void UnassignedItemSelectionDialog::itemsChanged() {
   int s = selected();
   int new_s = -1;
   if (s >= 0) {
@@ -79,11 +79,9 @@ void UnassignedThermometerSelectionDialog::itemsChanged() {
   setSelected(new_s);
 }
 
-void UnassignedThermometerSelectionDialog::measurementsChanged() {
-  contentsChanged();
-}
+void UnassignedItemSelectionDialog::measurementsChanged() { contentsChanged(); }
 
-void UnassignedThermometerSelectionDialog::onChange() {
+void UnassignedItemSelectionDialog::onChange() {
   int s = selected();
   selected_device_id_ = "";
   if (s >= 0) {

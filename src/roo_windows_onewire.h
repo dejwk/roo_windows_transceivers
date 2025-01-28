@@ -65,7 +65,7 @@ class Configurator {
   ThermometerSelectorModel model_;
   ListActivity list_;
   ThermometerDetailsActivity details_;
-  UnassignedThermometerSelectionDialog assignment_;
+  UnassignedItemSelectionDialog assignment_;
 };
 
 }  // namespace roo_windows_onewire

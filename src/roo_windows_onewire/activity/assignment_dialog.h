@@ -11,14 +11,11 @@
 
 namespace roo_windows_onewire {
 
-class UnassignedThermometerRadioGroupItem
-    : public roo_windows::HorizontalLayout {
+class UnassignedRadioGroupItem : public roo_windows::HorizontalLayout {
  public:
-  UnassignedThermometerRadioGroupItem(const roo_windows::Environment& env,
-                                      const Ui* ui);
+  UnassignedRadioGroupItem(const roo_windows::Environment& env, const Ui* ui);
 
-  UnassignedThermometerRadioGroupItem(
-      const UnassignedThermometerRadioGroupItem& other);
+  UnassignedRadioGroupItem(const UnassignedRadioGroupItem& other);
 
   void set(std::string id);
 
@@ -28,25 +25,24 @@ class UnassignedThermometerRadioGroupItem
   const Ui* ui_;
 };
 
-class UnassignedThermometerRadioGroupModel
-    : public roo_windows::ListModel<UnassignedThermometerRadioGroupItem> {
+class UnassignedRadioGroupModel
+    : public roo_windows::ListModel<UnassignedRadioGroupItem> {
  public:
-  UnassignedThermometerRadioGroupModel(ThermometerSelectorModel& model)
-      : model_(model) {}
+  UnassignedRadioGroupModel(ThermometerSelectorModel& model) : model_(model) {}
 
   int elementCount() const override;
-  void set(int idx, UnassignedThermometerRadioGroupItem& dest) const override;
+  void set(int idx, UnassignedRadioGroupItem& dest) const override;
 
  private:
   ThermometerSelectorModel& model_;
 };
 
-class UnassignedThermometerSelectionDialog
-    : public roo_windows::RadioListDialog<UnassignedThermometerRadioGroupModel>,
+class UnassignedItemSelectionDialog
+    : public roo_windows::RadioListDialog<UnassignedRadioGroupModel>,
       public Model::EventListener {
  public:
-  UnassignedThermometerSelectionDialog(const roo_windows::Environment& env,
-                                       ThermometerSelectorModel& model);
+  UnassignedItemSelectionDialog(const roo_windows::Environment& env,
+                                ThermometerSelectorModel& model);
 
   void onEnter() override;
   void onExit(int result) override;
@@ -58,7 +54,7 @@ class UnassignedThermometerSelectionDialog
 
  private:
   ThermometerSelectorModel& model_;
-  UnassignedThermometerRadioGroupModel list_model_;
+  UnassignedRadioGroupModel list_model_;
   std::string selected_device_id_;
 };
 
