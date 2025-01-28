@@ -9,6 +9,7 @@
 #include "roo_collections/flat_small_hash_set.h"
 #include "roo_control/sensors/binding/binding.h"
 #include "roo_control/sensors/sensor.h"
+#include "roo_icons/filled/device.h"
 #include "roo_windows/core/widget.h"
 #include "roo_windows/widgets/text_label.h"
 
@@ -22,6 +23,7 @@ struct ModelItem {
 struct DeviceStateUi {
   roo_windows::WidgetCreatorFn creator_fn;
   roo_windows::WidgetSetterFn<roo_io::string_view> setter_fn;
+  const roo_display::Pictogram* icon;
 };
 
 class Model {
@@ -106,6 +108,7 @@ class ThermometerSelectorModel : public roo_control::SensorEventListener,
         // }
       }
     };
+    state_ui_.icon = &SCALED_ROO_ICON(filled, device_thermostat);
     sensors_.addEventListener(this);
   }
 
@@ -131,7 +134,7 @@ class ThermometerSelectorModel : public roo_control::SensorEventListener,
 
   void bind(size_t idx, roo_io::string_view item_id) override {
     bindings_[idx].binding.bind(item_id_mapping_[item_id]);
-    binding_ids_[idx] = std::string(item_id);
+    binding_ids_[idx] = std::string(item_id.data(), item_id.size());
   }
 
   void unbind(size_t idx) override {

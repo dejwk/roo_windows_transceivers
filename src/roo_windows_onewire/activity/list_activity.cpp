@@ -10,7 +10,7 @@ ThermometerListItem::ThermometerListItem(const roo_windows::Environment& env,
                                          ThermometerSelectedFn on_click,
                                          const DeviceStateUi* device_state_ui)
     : HorizontalLayout(env),
-      thermometer_icon_(env, SCALED_ROO_ICON(filled, device_thermostat)),
+      thermometer_icon_(env, *device_state_ui->icon),
       id_(env, "", roo_windows::font_subtitle1()),
       reading_(device_state_ui->creator_fn()),
       on_click_(on_click),
