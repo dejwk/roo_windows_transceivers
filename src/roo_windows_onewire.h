@@ -168,29 +168,27 @@ class Configurator {
       : model_(model),
         list_(env, env.scheduler(), model_,
               [this](roo_windows::Task& task, int idx) {
-                thermometerSelected(task, idx);
+                itemSelected(task, idx);
               }),
         details_(
             env, model_,
+            [this](roo_windows::Task& task, int idx) { assignItem(task, idx); },
             [this](roo_windows::Task& task, int idx) {
-              assignThermometer(task, idx);
-            },
-            [this](roo_windows::Task& task, int idx) {
-              unassignThermometer(task, idx);
+              unassignItem(task, idx);
             }),
         assignment_(env, model_) {}
 
   roo_windows::Activity& main() { return list_; }
 
-  void thermometerSelected(roo_windows::Task& task, int idx) {
+  void itemSelected(roo_windows::Task& task, int idx) {
     if (model_.isBound(idx)) {
       details_.enter(task, idx);
     } else {
-      assignThermometer(task, idx);
+      assignItem(task, idx);
     }
   }
 
-  void assignThermometer(roo_windows::Task& task, int idx) {
+  void assignItem(roo_windows::Task& task, int idx) {
     task.showDialog(assignment_, [&task, this, idx](int dialog_response_id) {
       if (dialog_response_id == 1) {
         model_.bind(idx, model_.getUnassignedItemId(assignment_.selected()));
@@ -198,9 +196,10 @@ class Configurator {
     });
   }
 
-  void unassignThermometer(roo_windows::Task& task, int idx) {
+  void unassignItem(roo_windows::Task& task, int idx) {
     task.showAlertDialog(
-        kStrUnassignQuestion, kStrUnassignSupportingText,
+        model_.ui()->labels.unassign_question,
+        model_.ui()->labels.unassign_question_supporting_text,
         {roo_windows::kStrDialogCancel, roo_windows::kStrDialogOK},
         [this, idx](int id) {
           if (id == 1) {
