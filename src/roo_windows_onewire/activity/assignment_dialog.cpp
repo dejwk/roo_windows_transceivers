@@ -1,10 +1,7 @@
 #include "roo_windows_onewire/activity/assignment_dialog.h"
 
-#include "roo_display/ui/string_printer.h"
-
 using roo_windows::Dialog;
 
-// using roo_onewire::ThermometerRoles;
 namespace roo_windows_onewire {
 
 UnassignedThermometerRadioGroupItem::UnassignedThermometerRadioGroupItem(
