@@ -8,11 +8,11 @@ using roo_windows::Dialog;
 namespace roo_windows_onewire {
 
 UnassignedThermometerRadioGroupItem::UnassignedThermometerRadioGroupItem(
-    const roo_windows::Environment& env, const DeviceStateUi* device_state_ui)
+    const roo_windows::Environment& env, const Ui* ui)
     : HorizontalLayout(env),
       id_(env, "1-Wire:1234567812345678", roo_windows::font_subtitle1()),
-      reading_(device_state_ui->creator_fn()),
-      device_state_ui_(device_state_ui) {
+      reading_(ui->widget_creator_fn()),
+      ui_(ui) {
   setGravity(roo_windows::Gravity(roo_windows::kHorizontalGravityNone,
                                   roo_windows::kVerticalGravityMiddle));
   id_.setMargins(roo_windows::MARGIN_NONE);
@@ -23,16 +23,14 @@ UnassignedThermometerRadioGroupItem::UnassignedThermometerRadioGroupItem(
 
 UnassignedThermometerRadioGroupItem::UnassignedThermometerRadioGroupItem(
     const UnassignedThermometerRadioGroupItem& other)
-    : HorizontalLayout(other),
-      id_(other.id_),
-      device_state_ui_(other.device_state_ui_) {
-  reading_ = device_state_ui_->creator_fn();
+    : HorizontalLayout(other), id_(other.id_), ui_(other.ui_) {
+  reading_ = ui_->widget_creator_fn();
   add(id_);
   add(*reading_);
 }
 
 void UnassignedThermometerRadioGroupItem::set(std::string id) {
-  device_state_ui_->setter_fn(id, *reading_);
+  ui_->widget_setter_fn(id, *reading_);
   id_.setText(std::move(id));
 }
 
@@ -50,10 +48,10 @@ void UnassignedThermometerRadioGroupModel::set(
 UnassignedThermometerSelectionDialog::UnassignedThermometerSelectionDialog(
     const roo_windows::Environment& env, ThermometerSelectorModel& model)
     : roo_windows::RadioListDialog<UnassignedThermometerRadioGroupModel>(
-          env, UnassignedThermometerRadioGroupItem(env, model.state_ui())),
+          env, UnassignedThermometerRadioGroupItem(env, model.ui())),
       model_(model),
       list_model_(model) {
-  setTitle(model.state_ui()->labels.assign_from_list);
+  setTitle(model.ui()->labels.assign_from_list);
   setModel(list_model_);
 }
 

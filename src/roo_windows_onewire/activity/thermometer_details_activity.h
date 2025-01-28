@@ -32,19 +32,19 @@ class ThermometerDetailsActivityContents : public roo_windows::VerticalLayout,
                                      std::function<void()> unassign_fn)
       : roo_windows::VerticalLayout(env),
         model_(model),
-        title_(env, model.state_ui()->labels.item_details_title),
+        title_(env, model.ui()->labels.item_details_title),
         name_(env, "", roo_windows::font_subtitle1(),
               roo_display::kCenter | roo_display::kMiddle),
         id_(env, "", roo_windows::font_caption(),
             roo_display::kCenter | roo_display::kMiddle),
-        reading_(model.state_ui()->creator_fn()),
+        reading_(model.ui()->widget_creator_fn()),
         //  roo_display::kCenter | roo_display::kMiddle),
         d1_(env),
         actions_(env),
         button_unassign_(env, SCALED_ROO_ICON(filled, content_link_off),
-                         model.state_ui()->labels.unassign),
+                         model.ui()->labels.unassign),
         button_assign_(env, SCALED_ROO_ICON(filled, content_link),
-                       model.state_ui()->labels.assign) {
+                       model.ui()->labels.assign) {
     setGravity(roo_windows::Gravity(roo_windows::kHorizontalGravityCenter,
                                     roo_windows::kVerticalGravityMiddle));
     // edit_.setOnInteractiveChange(edit_fn);
@@ -102,7 +102,7 @@ class ThermometerDetailsActivityContents : public roo_windows::VerticalLayout,
   }
 
   void updateReading() {
-    model_.state_ui()->setter_fn(model_.getBindingItemId(idx_), *reading_);
+    model_.ui()->widget_setter_fn(model_.getBindingItemId(idx_), *reading_);
   }
 
  private:

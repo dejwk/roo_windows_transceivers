@@ -61,7 +61,7 @@ class Configurator {
         });
   }
 
-  DeviceStateUi widget_state_ui_;
+  Ui ui_;
   ThermometerSelectorModel model_;
   ListActivity list_;
   ThermometerDetailsActivity details_;

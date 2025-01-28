@@ -21,9 +21,9 @@ struct ModelItem {
   std::string label;
 };
 
-struct DeviceStateUi {
-  roo_windows::WidgetCreatorFn creator_fn;
-  roo_windows::WidgetSetterFn<roo_io::string_view> setter_fn;
+struct Ui {
+  roo_windows::WidgetCreatorFn widget_creator_fn;
+  roo_windows::WidgetSetterFn<roo_io::string_view> widget_setter_fn;
   const roo_display::Pictogram* icon;
   struct Labels {
     const char* list_title;
@@ -62,7 +62,7 @@ class Model {
   virtual void bind(size_t idx, roo_io::string_view item_id) = 0;
   virtual void unbind(size_t idx) = 0;
 
-  virtual const DeviceStateUi* state_ui() const = 0;
+  virtual const Ui* ui() const = 0;
 
   void addEventListener(EventListener* listener) {
     auto result = event_listeners_.insert(listener);
@@ -99,11 +99,11 @@ class ThermometerSelectorModel : public roo_control::SensorEventListener,
                            std::vector<ModelItem> bindings)
       : sensors_(sensors), bindings_(bindings) {
     // state_ui_(TemperatureWidgetSetter(env, &sensors, *this)) {
-    state_ui_.creator_fn = [env]() {
+    state_ui_.widget_creator_fn = [env]() {
       return std::unique_ptr<roo_windows::Widget>(
           new roo_windows::TextLabel(*env, "", roo_windows::font_subtitle1()));
     };
-    state_ui_.setter_fn = [this](roo_io::string_view item_id,
+    state_ui_.widget_setter_fn = [this](roo_io::string_view item_id,
                                  roo_windows::Widget& dest) {
       roo_control::UniversalDeviceId device_id = deviceIdFromItemId(item_id);
       roo_control::Measurement m = sensors_.read(device_id);
@@ -186,7 +186,7 @@ class ThermometerSelectorModel : public roo_control::SensorEventListener,
 
   void newReadingsAvailable() override { notifyMeasurementsChanged(); }
 
-  const DeviceStateUi* state_ui() const override { return &state_ui_; }
+  const Ui* ui() const override { return &state_ui_; }
 
  private:
   // Zero-initialized integer.
@@ -258,7 +258,7 @@ class ThermometerSelectorModel : public roo_control::SensorEventListener,
                                     roo_control::UniversalDeviceId>
       item_id_mapping_;
 
-  DeviceStateUi state_ui_;
+  Ui state_ui_;
 };
 
 }  // namespace roo_windows_onewire

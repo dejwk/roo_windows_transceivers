@@ -6,11 +6,11 @@
 namespace roo_windows_onewire {
 
 ListItem::ListItem(const roo_windows::Environment& env, ItemSelectedFn on_click,
-                   const DeviceStateUi* device_state_ui)
+                   const Ui* device_state_ui)
     : HorizontalLayout(env),
       thermometer_icon_(env, *device_state_ui->icon),
       id_(env, "", roo_windows::font_subtitle1()),
-      reading_(device_state_ui->creator_fn()),
+      reading_(device_state_ui->widget_creator_fn()),
       on_click_(on_click),
       device_state_ui_(device_state_ui) {
   setGravity(roo_windows::Gravity(roo_windows::kHorizontalGravityNone,
@@ -30,7 +30,7 @@ ListItem::ListItem(const ListItem& other)
     : HorizontalLayout(other),
       thermometer_icon_(other.thermometer_icon_),
       id_(other.id_),
-      reading_(other.device_state_ui_->creator_fn()),
+      reading_(other.device_state_ui_->widget_creator_fn()),
       on_click_(other.on_click_),
       device_state_ui_(other.device_state_ui_) {
   add(thermometer_icon_);
@@ -42,7 +42,7 @@ void ListItem::set(int idx, const Model& model) {
   idx_ = idx;
   id_.setText(model.getBindingLabel(idx_));
   // roo_control::Measurement m = model.sensors().read(model.getBinding(idx_));
-  device_state_ui_->setter_fn(model.getBindingItemId(idx_), *reading_);
+  device_state_ui_->widget_setter_fn(model.getBindingItemId(idx_), *reading_);
   thermometer_icon_.setVisibility(model.isBound(idx_) ? VISIBLE : INVISIBLE);
 }
 
@@ -67,10 +67,10 @@ ListActivityContents::ListActivityContents(
     ItemSelectedFn thermometer_selected_fn)
     : VerticalLayout(env),
       model_(model),
-      title_(env, model.state_ui()->labels.list_title),
+      title_(env, model.ui()->labels.list_title),
       list_model_(model),
       list_(env, list_model_,
-            ListItem(env, thermometer_selected_fn, model.state_ui())) {
+            ListItem(env, thermometer_selected_fn, model.ui())) {
   add(title_);
   add(list_, VerticalLayout::Params());
 }

@@ -27,7 +27,7 @@ typedef std::function<void(roo_windows::Task& task, int id)> ItemSelectedFn;
 class ListItem : public roo_windows::HorizontalLayout {
  public:
   ListItem(const roo_windows::Environment& env, ItemSelectedFn on_click,
-           const DeviceStateUi* device_state_ui);
+           const Ui* device_state_ui);
 
   ListItem(const ListItem& other);
 
@@ -53,7 +53,7 @@ class ListItem : public roo_windows::HorizontalLayout {
   std::unique_ptr<Widget> reading_;
   // roo_windows::Icon lock_icon_;
   ItemSelectedFn on_click_;
-  const DeviceStateUi* device_state_ui_;
+  const Ui* device_state_ui_;
 };
 
 class ListModel : public roo_windows::ListModel<ListItem> {
