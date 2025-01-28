@@ -5,10 +5,10 @@
 #include "roo_control/sensors/binding/binding.h"
 #include "roo_windows/dialogs/string_constants.h"
 #include "roo_windows/locale/languages.h"
+#include "roo_windows_onewire/activity/assignment_dialog.h"
+#include "roo_windows_onewire/activity/details_activity.h"
 #include "roo_windows_onewire/activity/list_activity.h"
 #include "roo_windows_onewire/activity/model.h"
-#include "roo_windows_onewire/activity/thermometer_assignment_dialog.h"
-#include "roo_windows_onewire/activity/thermometer_details_activity.h"
 
 namespace roo_windows_onewire {
 

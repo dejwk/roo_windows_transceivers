@@ -1,4 +1,4 @@
-#include "roo_windows_onewire/activity/thermometer_assignment_dialog.h"
+#include "roo_windows_onewire/activity/assignment_dialog.h"
 
 #include "roo_display/ui/string_printer.h"
 
