@@ -108,14 +108,6 @@ class ThermometerSelectorModel : public roo_control::SensorEventListener,
   const Ui* ui() const override { return &state_ui_; }
 
  private:
-  // Zero-initialized integer.
-  struct RefCounter {
-    RefCounter() : val(0) {}
-    int val;
-    void increment() { ++val; }
-    operator int() const { return val; }
-  };
-
   void updateSensors() {
     all_sensors_.clear();
     all_item_ids_.clear();
@@ -172,10 +164,8 @@ class ThermometerSelectorModel : public roo_control::SensorEventListener,
 
 class Configurator {
  public:
-  Configurator(const roo_windows::Environment& env,
-               roo_control::SensorUniverse& sensors,
-               std::vector<ModelItem> bindings)
-      : model_(&env, sensors, std::move(bindings)),
+  Configurator(const roo_windows::Environment& env, Model& model)
+      : model_(model),
         list_(env, env.scheduler(), model_,
               [this](roo_windows::Task& task, int idx) {
                 thermometerSelected(task, idx);
@@ -219,8 +209,7 @@ class Configurator {
         });
   }
 
-  Ui ui_;
-  ThermometerSelectorModel model_;
+  Model& model_;
   ListActivity list_;
   DetailsActivity details_;
   UnassignedItemSelectionDialog assignment_;
