@@ -27,7 +27,7 @@ class DetailsActivityContents : public roo_windows::VerticalLayout,
                                 public Model::EventListener {
  public:
   DetailsActivityContents(const roo_windows::Environment& env,
-                          ThermometerSelectorModel& model,
+                          Model& model,
                           std::function<void()> assign_fn,
                           std::function<void()> unassign_fn)
       : roo_windows::VerticalLayout(env),
@@ -108,7 +108,7 @@ class DetailsActivityContents : public roo_windows::VerticalLayout,
  private:
   void measurementsChanged() override { updateReading(); }
 
-  ThermometerSelectorModel& model_;
+  Model& model_;
   int idx_;
   roo_windows::menu::Title title_;
   roo_windows::TextLabel name_;
@@ -123,7 +123,7 @@ class DetailsActivityContents : public roo_windows::VerticalLayout,
 class DetailsActivity : public roo_windows::Activity {
  public:
   DetailsActivity(const roo_windows::Environment& env,
-                             ThermometerSelectorModel& model,
+                             Model& model,
                              SelectFn assign_fn, SelectFn unassign_fn)
       : roo_windows::Activity(),
         idx_(),
@@ -158,7 +158,7 @@ class DetailsActivity : public roo_windows::Activity {
 
  private:
   int idx_;
-  ThermometerSelectorModel& model_;
+  Model& model_;
   DetailsActivityContents contents_;
   roo_windows::ScrollablePanel scrollable_container_;
 };

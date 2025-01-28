@@ -52,7 +52,7 @@ class Model {
   virtual void requestUpdate() = 0;
 
   virtual size_t getItemCount() const = 0;
-  virtual roo_io::string_view getItemId(size_t idx) = 0;
+  virtual roo_io::string_view getItemId(size_t idx) const = 0;
 
   virtual size_t getBindingCount() const = 0;
   virtual roo_io::string_view getBindingLabel(size_t idx) const = 0;
@@ -74,8 +74,15 @@ class Model {
     event_listeners_.erase(listener);
   }
 
+  size_t getUnassignedItemCount() const { return unassigned_items_.size(); }
+
+  roo_io::string_view getUnassignedItemId(size_t idx) const {
+    return getItemId(unassigned_items_[idx]);
+  }
+
  protected:
   void notifyItemsChanged() {
+    updateUnassignedItems();
     for (auto& listener : event_listeners_) {
       listener->itemsChanged();
     }
@@ -87,7 +94,30 @@ class Model {
     }
   }
 
+ protected:
+  // Indexes into the items vector.
+  std::vector<size_t> unassigned_items_;
+
  private:
+  void updateUnassignedItems() {
+    const size_t binding_count = getBindingCount();
+    roo_collections::FlatSmallHashSet<size_t> binding_set(binding_count);
+
+    unassigned_items_.clear();
+    for (size_t i = 0; i < binding_count; ++i) {
+      if (isBound(i)) {
+        binding_set.insert(i);
+      }
+    }
+
+    const size_t item_count = getItemCount();
+    for (size_t i = 0; i < item_count; ++i) {
+      if (!binding_set.contains(i)) {
+        unassigned_items_.push_back(i);
+      }
+    }
+  }
+
   roo_collections::FlatSmallHashSet<EventListener*> event_listeners_;
 };
 
@@ -104,7 +134,7 @@ class ThermometerSelectorModel : public roo_control::SensorEventListener,
           new roo_windows::TextLabel(*env, "", roo_windows::font_subtitle1()));
     };
     state_ui_.widget_setter_fn = [this](roo_io::string_view item_id,
-                                 roo_windows::Widget& dest) {
+                                        roo_windows::Widget& dest) {
       roo_control::UniversalDeviceId device_id = deviceIdFromItemId(item_id);
       roo_control::Measurement m = sensors_.read(device_id);
       auto& label = (roo_windows::TextLabel&)dest;
@@ -121,15 +151,14 @@ class ThermometerSelectorModel : public roo_control::SensorEventListener,
     };
     state_ui_.icon = &SCALED_ROO_ICON(filled, device_thermostat);
     state_ui_.labels = {
-      .list_title = kStrThermometers,
-      .item_details_title = kStrThermometerDetails,
-      .assign = kStrAssign,
-      .unassign = kStrUnassign,
-      .unassign_question = kStrUnassignQuestion,
-      .unassign_question_supporting_text = kStrUnassignSupportingText,
-      .unassigned = kStrNotAssigned,
-      .assign_from_list = kStrSelectThermometer
-    };
+        .list_title = kStrThermometers,
+        .item_details_title = kStrThermometerDetails,
+        .assign = kStrAssign,
+        .unassign = kStrUnassign,
+        .unassign_question = kStrUnassignQuestion,
+        .unassign_question_supporting_text = kStrUnassignSupportingText,
+        .unassigned = kStrNotAssigned,
+        .assign_from_list = kStrSelectThermometer};
     sensors_.addEventListener(this);
   }
 
@@ -169,14 +198,8 @@ class ThermometerSelectorModel : public roo_control::SensorEventListener,
 
   size_t getItemCount() const override { return all_sensors_.size(); }
 
-  roo_io::string_view getItemId(size_t idx) override {
+  roo_io::string_view getItemId(size_t idx) const override {
     return all_item_ids_[idx];
-  }
-
-  size_t getUnassignedItemCount() const { return unassigned_sensors_.size(); }
-
-  roo_io::string_view getUnassignedItemId(size_t idx) const {
-    return all_item_ids_[unassigned_sensors_[idx]];
   }
 
   void sensorsChanged() override {
@@ -201,10 +224,8 @@ class ThermometerSelectorModel : public roo_control::SensorEventListener,
     all_sensors_.clear();
     all_item_ids_.clear();
     binding_ids_.clear();
-    unassigned_sensors_.clear();
     item_id_mapping_.clear();
 
-    binding_counts_.clear();
     for (size_t i = 0; i < bindings_.size(); ++i) {
       roo_control::UniversalDeviceId id = bindings_[i].binding.get();
       if (!id.isDefined()) {
@@ -213,7 +234,6 @@ class ThermometerSelectorModel : public roo_control::SensorEventListener,
       }
       binding_ids_.push_back(
           sensors_.sensorUserFriendlyName(bindings_[i].binding.get()));
-      binding_counts_[id].increment();
     }
 
     for (size_t i = 0; i < sensors_.familyCount(); ++i) {
@@ -222,9 +242,6 @@ class ThermometerSelectorModel : public roo_control::SensorEventListener,
       roo_control::SensorFamilyId family_id = sensors_.family_id(i);
       for (size_t j = 0; j < sensor_count; j++) {
         roo_control::UniversalDeviceId id(family_id, family.sensorId(j));
-        if (!binding_counts_.contains(id)) {
-          unassigned_sensors_.push_back(all_sensors_.size());
-        }
         all_sensors_.push_back(id);
         all_item_ids_.push_back(sensors_.sensorUserFriendlyName(id));
       }
@@ -246,13 +263,9 @@ class ThermometerSelectorModel : public roo_control::SensorEventListener,
   roo_control::SensorUniverse& sensors_;
   std::vector<ModelItem> bindings_;
 
-  roo_collections::FlatSmallHashMap<roo_control::UniversalDeviceId, RefCounter>
-      binding_counts_;
-
   std::vector<roo_control::UniversalDeviceId> all_sensors_;
   std::vector<std::string> all_item_ids_;
   std::vector<std::string> binding_ids_;
-  std::vector<size_t> unassigned_sensors_;
 
   roo_collections::FlatSmallHashMap<roo_io::string_view,
                                     roo_control::UniversalDeviceId>

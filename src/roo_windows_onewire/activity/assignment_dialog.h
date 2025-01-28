@@ -28,13 +28,13 @@ class UnassignedRadioGroupItem : public roo_windows::HorizontalLayout {
 class UnassignedRadioGroupModel
     : public roo_windows::ListModel<UnassignedRadioGroupItem> {
  public:
-  UnassignedRadioGroupModel(ThermometerSelectorModel& model) : model_(model) {}
+  UnassignedRadioGroupModel(Model& model) : model_(model) {}
 
   int elementCount() const override;
   void set(int idx, UnassignedRadioGroupItem& dest) const override;
 
  private:
-  ThermometerSelectorModel& model_;
+  Model& model_;
 };
 
 class UnassignedItemSelectionDialog
@@ -42,7 +42,7 @@ class UnassignedItemSelectionDialog
       public Model::EventListener {
  public:
   UnassignedItemSelectionDialog(const roo_windows::Environment& env,
-                                ThermometerSelectorModel& model);
+                                Model& model);
 
   void onEnter() override;
   void onExit(int result) override;
@@ -53,7 +53,7 @@ class UnassignedItemSelectionDialog
   void measurementsChanged() override;
 
  private:
-  ThermometerSelectorModel& model_;
+  Model& model_;
   UnassignedRadioGroupModel list_model_;
   std::string selected_device_id_;
 };

@@ -43,7 +43,7 @@ void UnassignedRadioGroupModel::set(int idx,
 }
 
 UnassignedItemSelectionDialog::UnassignedItemSelectionDialog(
-    const roo_windows::Environment& env, ThermometerSelectorModel& model)
+    const roo_windows::Environment& env, Model& model)
     : roo_windows::RadioListDialog<UnassignedRadioGroupModel>(
           env, UnassignedRadioGroupItem(env, model.ui())),
       model_(model),
