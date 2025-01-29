@@ -7,7 +7,7 @@ namespace roo_windows_onewire {
 UnassignedRadioGroupItem::UnassignedRadioGroupItem(
     const roo_windows::Environment& env, const Ui* ui)
     : HorizontalLayout(env),
-      id_(env, "1-Wire:1234567812345678", roo_windows::font_subtitle1()),
+      id_(env, ui->canonical_id, roo_windows::font_subtitle1()),
       reading_(ui->widget_creator_fn()),
       ui_(ui) {
   setGravity(roo_windows::Gravity(roo_windows::kHorizontalGravityNone,

@@ -46,6 +46,7 @@ class ThermometerSelectorModel : public roo_control::SensorEventListener,
       }
     };
     state_ui_.icon = &SCALED_ROO_ICON(filled, device_thermostat);
+    state_ui_.canonical_id = "1-Wire:DDDDDDDDDDDDDDDD";
     state_ui_.labels = {
         .list_title = kStrThermometers,
         .item_details_title = kStrThermometerDetails,

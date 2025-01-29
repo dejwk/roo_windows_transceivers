@@ -14,6 +14,8 @@ struct Ui {
   roo_windows::WidgetCreatorFn widget_creator_fn;
   roo_windows::WidgetSetterFn<roo_io::string_view> widget_setter_fn;
   const roo_display::Pictogram* icon;
+  // Used for sizing the dialog. Should be the widest expected ID.
+  const char* canonical_id;
   struct Labels {
     const char* list_title;
     const char* item_details_title;
