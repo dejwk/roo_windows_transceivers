@@ -7,7 +7,7 @@
 #include "roo_windows/containers/list_layout.h"
 #include "roo_windows/dialogs/dialog.h"
 #include "roo_windows/dialogs/radio_list_dialog.h"
-#include "roo_windows_onewire/activity/model.h"
+#include "roo_windows_onewire/model.h"
 
 namespace roo_windows_onewire {
 

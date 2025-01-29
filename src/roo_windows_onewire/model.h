@@ -1,18 +1,12 @@
 #pragma once
 
-#include <Arduino.h>
-
 #include <functional>
 #include <memory>
 #include <vector>
 
 #include "roo_collections/flat_small_hash_set.h"
-#include "roo_control/sensors/binding/binding.h"
-#include "roo_control/sensors/sensor.h"
-#include "roo_icons/filled/device.h"
 #include "roo_windows/core/widget.h"
 #include "roo_windows/widgets/text_label.h"
-#include "roo_windows_onewire/activity/resources.h"
 
 namespace roo_windows_onewire {
 

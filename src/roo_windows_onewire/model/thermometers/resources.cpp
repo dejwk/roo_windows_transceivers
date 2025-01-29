@@ -1,4 +1,4 @@
-#include "roo_windows_onewire/activity/resources.h"
+#include "roo_windows_onewire/model/thermometers/resources.h"
 
 #include "roo_windows/config.h"
 

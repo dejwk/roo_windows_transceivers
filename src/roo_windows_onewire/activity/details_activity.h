@@ -17,7 +17,7 @@
 #include "roo_windows/widgets/icon.h"
 #include "roo_windows/widgets/icon_with_caption.h"
 #include "roo_windows/widgets/text_field.h"
-#include "roo_windows_onewire/activity/model.h"
+#include "roo_windows_onewire/model.h"
 
 namespace roo_windows_onewire {
 
@@ -26,8 +26,7 @@ typedef std::function<void(roo_windows::Task& task, int id)> SelectFn;
 class DetailsActivityContents : public roo_windows::VerticalLayout,
                                 public Model::EventListener {
  public:
-  DetailsActivityContents(const roo_windows::Environment& env,
-                          Model& model,
+  DetailsActivityContents(const roo_windows::Environment& env, Model& model,
                           std::function<void()> assign_fn,
                           std::function<void()> unassign_fn)
       : roo_windows::VerticalLayout(env),
@@ -90,7 +89,7 @@ class DetailsActivityContents : public roo_windows::VerticalLayout,
     idx_ = idx;
     name_.setText(model_.getBindingLabel(idx_));
     if (!model_.isBound(idx_)) {
-      id_.setText(kStrNotAssigned);
+      id_.setText(model_.ui()->labels.unassigned);
     } else {
       id_.setText(model_.getBindingItemId(idx_));
     }
@@ -122,9 +121,8 @@ class DetailsActivityContents : public roo_windows::VerticalLayout,
 
 class DetailsActivity : public roo_windows::Activity {
  public:
-  DetailsActivity(const roo_windows::Environment& env,
-                             Model& model,
-                             SelectFn assign_fn, SelectFn unassign_fn)
+  DetailsActivity(const roo_windows::Environment& env, Model& model,
+                  SelectFn assign_fn, SelectFn unassign_fn)
       : roo_windows::Activity(),
         idx_(),
         model_(model),

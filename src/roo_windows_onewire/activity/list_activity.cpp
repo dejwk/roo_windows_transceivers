@@ -1,7 +1,7 @@
 #include "roo_windows_onewire/activity/list_activity.h"
 
 #include "roo_windows/core/application.h"
-#include "roo_windows_onewire/activity/model.h"
+#include "roo_windows_onewire/model.h"
 
 namespace roo_windows_onewire {
 
