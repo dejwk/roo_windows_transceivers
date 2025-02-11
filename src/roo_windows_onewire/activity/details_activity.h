@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "roo_control/sensors/sensor.h"
+#include "roo_control/transceivers/notification.h"
 #include "roo_icons/filled/action.h"
 #include "roo_icons/filled/content.h"
 #include "roo_icons/filled/notification.h"
