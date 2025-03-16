@@ -14,7 +14,7 @@ namespace roo_windows_onewire {
 
 struct ModelItem {
   roo_control::SensorBinding& binding;
-  std::string label;
+  roo::string_view label;
 };
 
 class NewThermometerSelectorModel
@@ -24,8 +24,7 @@ class NewThermometerSelectorModel
   NewThermometerSelectorModel(const roo_windows::Environment* env,
                               roo_control::TransceiverUniverse& sensors,
                               std::vector<ModelItem> bindings)
-      : sensors_(sensors), bindings_(bindings) {
-    // state_ui_(TemperatureWidgetSetter(env, &sensors, *this)) {
+      : sensors_(sensors), bindings_(std::move(bindings)) {
     state_ui_.widget_creator_fn = [env]() {
       return std::unique_ptr<roo_windows::Widget>(
           new roo_windows::TextLabel(*env, "", roo_windows::font_subtitle1()));
