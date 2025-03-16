@@ -78,17 +78,22 @@ class NewThermometerSelectorModel
   }
 
   roo_io::string_view getBindingItemId(size_t idx) const override {
+    initBindings();
     return binding_ids_[idx];
   }
 
   void bind(size_t idx, roo_io::string_view item_id) override {
+    initBindings();
     bindings_[idx].binding.bind(item_id_mapping_[item_id]);
     binding_ids_[idx] = std::string(item_id.data(), item_id.size());
+    notifyItemsChanged();
   }
 
   void unbind(size_t idx) override {
+    initBindings();
     bindings_[idx].binding.unbind();
     binding_ids_[idx] = "";
+    notifyItemsChanged();
   }
 
   bool isBound(size_t idx) const override {
@@ -114,38 +119,30 @@ class NewThermometerSelectorModel
   void updateSensors() {
     all_sensors_.clear();
     all_item_ids_.clear();
-    binding_ids_.clear();
     item_id_mapping_.clear();
 
     char buf[64];
-    for (size_t i = 0; i < bindings_.size(); ++i) {
-      roo_control::TransceiverSensorLocator loc = bindings_[i].binding.get();
-      if (!loc.isDefined()) {
-        binding_ids_.push_back("");
-        continue;
-      }
-      bindings_[i].binding.get().write_cstr(buf);
-      binding_ids_.emplace_back(buf);
-    }
-
-    size_t device_count = sensors_.deviceCount();
     roo_control_TransceiverDescriptor descriptor;
-    for (size_t j = 0; j < device_count; j++) {
-      roo_control::TransceiverDeviceLocator device_loc = sensors_.device(j);
-      if (!sensors_.getDeviceDescriptor(device_loc, descriptor)) continue;
-      for (size_t sensor_idx = 0; sensor_idx < descriptor.sensors_count;
-           ++sensor_idx) {
-        if (descriptor.sensors[sensor_idx].quantity !=
-            roo_control_Quantity_kTemperature) {
-          continue;
-        }
-        roo_control::TransceiverSensorLocator sensor_loc(
-            device_loc, descriptor.sensors[sensor_idx].id);
-        all_sensors_.push_back(sensor_loc);
-        sensor_loc.write_cstr(buf);
-        all_item_ids_.emplace_back(buf);
-      }
-    }
+    sensors_.forEachDevice(
+        [&](const roo_control::TransceiverDeviceLocator& device_loc) {
+          if (!sensors_.getDeviceDescriptor(device_loc, descriptor)) {
+            LOG(ERROR) << "No descriptor for " << device_loc;
+            return true;
+          }
+          for (size_t sensor_idx = 0; sensor_idx < descriptor.sensors_count;
+               ++sensor_idx) {
+            if (descriptor.sensors[sensor_idx].quantity !=
+                roo_control_Quantity_kTemperature) {
+              continue;
+            }
+            roo_control::TransceiverSensorLocator sensor_loc(
+                device_loc, descriptor.sensors[sensor_idx].id);
+            all_sensors_.push_back(sensor_loc);
+            sensor_loc.write_cstr(buf);
+            all_item_ids_.emplace_back(buf);
+          }
+          return true;
+        });
     for (size_t i = 0; i < all_sensors_.size(); ++i) {
       item_id_mapping_[all_item_ids_[i]] = all_sensors_[i];
     }
@@ -160,12 +157,26 @@ class NewThermometerSelectorModel
     return itr->second;
   }
 
+  void initBindings() const {
+    if (binding_ids_.size() == bindings_.size()) return;
+    char buf[64];
+    for (size_t i = 0; i < bindings_.size(); ++i) {
+      roo_control::TransceiverSensorLocator loc = bindings_[i].binding.get();
+      if (!loc.isDefined()) {
+        binding_ids_.push_back("");
+        continue;
+      }
+      bindings_[i].binding.get().write_cstr(buf);
+      binding_ids_.emplace_back(buf);
+    }
+  }
+
   roo_control::TransceiverUniverse& sensors_;
   std::vector<ModelItem> bindings_;
 
   std::vector<roo_control::TransceiverSensorLocator> all_sensors_;
   std::vector<std::string> all_item_ids_;
-  std::vector<std::string> binding_ids_;
+  mutable std::vector<std::string> binding_ids_;
 
   roo_collections::FlatSmallHashMap<roo_io::string_view,
                                     roo_control::TransceiverSensorLocator>
