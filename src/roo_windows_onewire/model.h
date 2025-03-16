@@ -92,18 +92,18 @@ class Model {
  private:
   void updateUnassignedItems() {
     const size_t binding_count = getBindingCount();
-    roo_collections::FlatSmallHashSet<size_t> binding_set(binding_count);
+    roo_collections::FlatSmallHashSet<roo::string_view> binding_set(binding_count);
 
     unassigned_items_.clear();
     for (size_t i = 0; i < binding_count; ++i) {
       if (isBound(i)) {
-        binding_set.insert(i);
+        binding_set.insert(getBindingItemId(i));
       }
     }
 
     const size_t item_count = getItemCount();
     for (size_t i = 0; i < item_count; ++i) {
-      if (!binding_set.contains(i)) {
+      if (!binding_set.contains(getItemId(i))) {
         unassigned_items_.push_back(i);
       }
     }
