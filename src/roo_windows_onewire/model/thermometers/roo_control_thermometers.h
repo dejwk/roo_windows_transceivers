@@ -17,13 +17,12 @@ struct ModelItem {
   roo::string_view label;
 };
 
-class NewThermometerSelectorModel
-    : public roo_control::TransceiverEventListener,
-      public Model {
+class ThermometerSelectorModel : public roo_control::TransceiverEventListener,
+                                 public Model {
  public:
-  NewThermometerSelectorModel(const roo_windows::Environment* env,
-                              roo_control::TransceiverUniverse& sensors,
-                              std::vector<ModelItem> bindings)
+  ThermometerSelectorModel(const roo_windows::Environment* env,
+                           roo_control::TransceiverUniverse& sensors,
+                           std::vector<ModelItem> bindings)
       : sensors_(sensors), bindings_(std::move(bindings)) {
     state_ui_.widget_creator_fn = [env]() {
       return std::unique_ptr<roo_windows::Widget>(
@@ -60,12 +59,12 @@ class NewThermometerSelectorModel
     sensors_.addEventListener(this);
   }
 
-  ~NewThermometerSelectorModel() { sensors_.removeEventListener(this); }
+  ~ThermometerSelectorModel() { sensors_.removeEventListener(this); }
 
-  NewThermometerSelectorModel(const NewThermometerSelectorModel&) = delete;
-  NewThermometerSelectorModel(NewThermometerSelectorModel&&) = delete;
+  ThermometerSelectorModel(const ThermometerSelectorModel&) = delete;
+  ThermometerSelectorModel(ThermometerSelectorModel&&) = delete;
 
-  NewThermometerSelectorModel& operator=(const NewThermometerSelectorModel& m) =
+  ThermometerSelectorModel& operator=(const ThermometerSelectorModel& m) =
       delete;
 
   void requestUpdate() override { sensors_.requestUpdate(); }
