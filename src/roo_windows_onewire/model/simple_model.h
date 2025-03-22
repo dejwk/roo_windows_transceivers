@@ -111,13 +111,11 @@ class SimpleTransceiverSelectorModel
     : public SimpleSelectorModel<Item, Binding>,
       public roo_transceivers::EventListener {
  public:
-  using Base = SimpleSelectorModel<roo_transceivers::SensorLocator,
-                                   roo_transceivers::SensorBinding>;
+  using Base = SimpleSelectorModel<Item, Binding>;
 
-  SimpleTransceiverSelectorModel(
-      const roo_windows::Environment* env,
-      roo_transceivers::Universe& transceivers,
-      std::vector<ModelItem<roo_transceivers::SensorBinding>> bindings)
+  SimpleTransceiverSelectorModel(const roo_windows::Environment* env,
+                                 roo_transceivers::Universe& transceivers,
+                                 std::vector<ModelItem<Binding>> bindings)
       : Base(env, std::move(bindings)), transceivers_(transceivers) {
     transceivers_.addEventListener(this);
     updateSensors();
