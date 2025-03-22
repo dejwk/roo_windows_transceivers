@@ -108,18 +108,68 @@ class SimpleSelectorModel : public Model {
   roo_collections::FlatSmallHashMap<roo_io::string_view, Item> item_id_mapping_;
 };
 
-class ThermometerSelectorModel
-    : public SimpleSelectorModel<roo_transceivers::SensorLocator,
-                                 roo_transceivers::SensorBinding>,
+template <typename Item, typename Binding>
+class SimpleTransceiverSelectorModel
+    : public SimpleSelectorModel<Item, Binding>,
       public roo_transceivers::EventListener {
  public:
   using Base = SimpleSelectorModel<roo_transceivers::SensorLocator,
                                    roo_transceivers::SensorBinding>;
 
-  ThermometerSelectorModel(
-      const roo_windows::Environment* env, roo_transceivers::Universe& sensors,
+  SimpleTransceiverSelectorModel(
+      const roo_windows::Environment* env,
+      roo_transceivers::Universe& transceivers,
       std::vector<ModelItem<roo_transceivers::SensorBinding>> bindings)
-      : Base(env, std::move(bindings)), transceivers_(sensors) {
+      : Base(env, std::move(bindings)), transceivers_(transceivers) {
+    transceivers_.addEventListener(this);
+    updateSensors();
+  }
+
+  ~SimpleTransceiverSelectorModel() { transceivers_.removeEventListener(this); }
+
+  void requestUpdate() override { transceivers_.requestUpdate(); }
+
+  void devicesChanged() override {
+    updateSensors();
+    Base::notifyItemsChanged();
+  }
+
+  void newReadingsAvailable() override { Base::notifyMeasurementsChanged(); }
+
+ protected:
+  virtual void maybeAddTransceiver(
+      const roo_transceivers::DeviceLocator& device,
+      const roo_transceivers_Descriptor& descriptor) = 0;
+
+  void updateSensors() {
+    Base::clear();
+    roo_transceivers_Descriptor descriptor;
+    transceivers_.forEachDevice(
+        [&](const roo_transceivers::DeviceLocator& device_loc) {
+          if (!transceivers_.getDeviceDescriptor(device_loc, descriptor)) {
+            LOG(ERROR) << "No descriptor for " << device_loc;
+            return true;
+          }
+          maybeAddTransceiver(device_loc, descriptor);
+          return true;
+        });
+  }
+
+  roo_transceivers::Universe& transceivers_;
+};
+
+class ThermometerSelectorModel
+    : public SimpleTransceiverSelectorModel<roo_transceivers::SensorLocator,
+                                            roo_transceivers::SensorBinding> {
+ public:
+  using Base = SimpleTransceiverSelectorModel<roo_transceivers::SensorLocator,
+                                              roo_transceivers::SensorBinding>;
+
+  ThermometerSelectorModel(
+      const roo_windows::Environment* env,
+      roo_transceivers::Universe& transceivers,
+      std::vector<ModelItem<roo_transceivers::SensorBinding>> bindings)
+      : Base(env, transceivers, std::move(bindings)) {
     state_ui_.widget_creator_fn = [env]() {
       return std::unique_ptr<roo_windows::Widget>(
           new roo_windows::TextLabel(*env, "", roo_windows::font_subtitle1()));
@@ -139,21 +189,9 @@ class ThermometerSelectorModel
         .unassign_question_supporting_text = kStrUnassignSupportingText,
         .unassigned = kStrNotAssigned,
         .assign_from_list = kStrSelectThermometer};
-    transceivers_.addEventListener(this);
     updateSensors();
     notifyItemsChanged();
   }
-
-  ~ThermometerSelectorModel() { transceivers_.removeEventListener(this); }
-
-  void requestUpdate() override { transceivers_.requestUpdate(); }
-
-  void devicesChanged() override {
-    updateSensors();
-    notifyItemsChanged();
-  }
-
-  void newReadingsAvailable() override { notifyMeasurementsChanged(); }
 
   const Ui* ui() const override { return &state_ui_; }
 
@@ -165,27 +203,19 @@ class ThermometerSelectorModel
     return buf;
   }
 
-  void updateSensors() {
-    clear();
-    roo_transceivers_Descriptor descriptor;
-    transceivers_.forEachDevice(
-        [&](const roo_transceivers::DeviceLocator& device_loc) {
-          if (!transceivers_.getDeviceDescriptor(device_loc, descriptor)) {
-            LOG(ERROR) << "No descriptor for " << device_loc;
-            return true;
-          }
-          for (size_t sensor_idx = 0; sensor_idx < descriptor.sensors_count;
-               ++sensor_idx) {
-            if (descriptor.sensors[sensor_idx].quantity !=
-                roo_transceivers_Quantity_kTemperature) {
-              continue;
-            }
-            roo_transceivers::SensorLocator sensor_loc(
-                device_loc, descriptor.sensors[sensor_idx].id);
-            addItem(sensor_loc);
-          }
-          return true;
-        });
+  void maybeAddTransceiver(
+      const roo_transceivers::DeviceLocator& device,
+      const roo_transceivers_Descriptor& descriptor) override {
+    for (size_t sensor_idx = 0; sensor_idx < descriptor.sensors_count;
+         ++sensor_idx) {
+      if (descriptor.sensors[sensor_idx].quantity !=
+          roo_transceivers_Quantity_kTemperature) {
+        continue;
+      }
+      roo_transceivers::SensorLocator sensor_loc(
+          device, descriptor.sensors[sensor_idx].id);
+      addItem(sensor_loc);
+    }
   }
 
   void updateDisplayValue(roo_io::string_view item_id,
@@ -208,7 +238,6 @@ class ThermometerSelectorModel
     }
   }
 
-  roo_transceivers::Universe& transceivers_;
   Ui state_ui_;
 };
 
