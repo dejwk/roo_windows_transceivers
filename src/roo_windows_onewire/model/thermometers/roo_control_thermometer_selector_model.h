@@ -2,9 +2,9 @@
 
 #include <Arduino.h>
 
-#include "roo_control/transceivers/binding/binding.h"
-#include "roo_control/transceivers/notification.h"
 #include "roo_icons/filled/device.h"
+#include "roo_transceivers/binding/binding.h"
+#include "roo_transceivers/notification.h"
 #include "roo_windows/dialogs/string_constants.h"
 #include "roo_windows/locale/languages.h"
 #include "roo_windows_onewire/model.h"
@@ -12,62 +12,23 @@
 
 namespace roo_windows_onewire {
 
+template <typename Binding>
 struct ModelItem {
-  roo_control::SensorBinding& binding;
+  Binding& binding;
   roo::string_view label;
 };
 
-class ThermometerSelectorModel : public roo_control::TransceiverEventListener,
-                                 public Model {
+template <typename Item, typename Binding>
+class SimpleSelectorModel : public Model {
  public:
-  ThermometerSelectorModel(const roo_windows::Environment* env,
-                           roo_control::TransceiverUniverse& sensors,
-                           std::vector<ModelItem> bindings)
-      : sensors_(sensors), bindings_(std::move(bindings)) {
-    state_ui_.widget_creator_fn = [env]() {
-      return std::unique_ptr<roo_windows::Widget>(
-          new roo_windows::TextLabel(*env, "", roo_windows::font_subtitle1()));
-    };
-    state_ui_.widget_setter_fn = [this](roo_io::string_view item_id,
-                                        roo_windows::Widget& dest) {
-      roo_control::TransceiverSensorLocator sensor_loc =
-          deviceIdFromItemId(item_id);
-      roo_control::Measurement m = sensors_.read(sensor_loc);
-      auto& label = (roo_windows::TextLabel&)dest;
-      if (!m.isDefined()) {
-        label.setText("");
-      } else {
-        // if (m.value() >= 85 || m.value() <= -55) {
-        //   label.setTextf("");
-        // } else {
-        CHECK_EQ(roo_control_Quantity_kTemperature, m.quantity());
-        label.setTextf("%3.1f°C", m.value());
-        // }
-      }
-    };
-    state_ui_.icon = &SCALED_ROO_ICON(filled, device_thermostat);
-    state_ui_.canonical_id = "1-Wire:DDDDDDDDDDDDDDDD";
-    state_ui_.labels = {
-        .list_title = kStrThermometers,
-        .item_details_title = kStrThermometerDetails,
-        .assign = kStrAssign,
-        .unassign = kStrUnassign,
-        .unassign_question = kStrUnassignQuestion,
-        .unassign_question_supporting_text = kStrUnassignSupportingText,
-        .unassigned = kStrNotAssigned,
-        .assign_from_list = kStrSelectThermometer};
-    sensors_.addEventListener(this);
-  }
+  SimpleSelectorModel(const roo_windows::Environment* env,
+                      std::vector<ModelItem<Binding>> bindings)
+      : bindings_(std::move(bindings)) {}
 
-  ~ThermometerSelectorModel() { sensors_.removeEventListener(this); }
+  SimpleSelectorModel(const SimpleSelectorModel&) = delete;
+  SimpleSelectorModel(SimpleSelectorModel&&) = delete;
 
-  ThermometerSelectorModel(const ThermometerSelectorModel&) = delete;
-  ThermometerSelectorModel(ThermometerSelectorModel&&) = delete;
-
-  ThermometerSelectorModel& operator=(const ThermometerSelectorModel& m) =
-      delete;
-
-  void requestUpdate() override { sensors_.requestUpdate(); }
+  SimpleSelectorModel& operator=(const SimpleSelectorModel& m) = delete;
 
   size_t getBindingCount() const override { return bindings_.size(); }
 
@@ -98,11 +59,94 @@ class ThermometerSelectorModel : public roo_control::TransceiverEventListener,
     return bindings_[idx].binding.isBound();
   }
 
-  size_t getItemCount() const override { return all_sensors_.size(); }
+  size_t getItemCount() const override { return all_items_.size(); }
 
   roo_io::string_view getItemId(size_t idx) const override {
     return all_item_ids_[idx];
   }
+
+ protected:
+  virtual std::string itemToString(const Item& item) const = 0;
+
+  void clear() {
+    all_items_.clear();
+    all_item_ids_.clear();
+    item_id_mapping_.clear();
+  }
+
+  void addItem(const Item& item) {
+    all_item_ids_.push_back(itemToString(item));
+    all_items_.push_back(item);
+    item_id_mapping_[all_item_ids_.back()] = all_items_.back();
+  }
+
+  const Item* lookupItem(roo_io::string_view item_id) const {
+    auto itr = item_id_mapping_.find(item_id);
+    if (itr == item_id_mapping_.end()) {
+      return nullptr;
+    }
+    return &itr->second;
+  }
+
+ private:
+  void initBindings() const {
+    if (binding_ids_.size() == bindings_.size()) {
+      // Already initialized.
+      return;
+    }
+    for (size_t i = 0; i < bindings_.size(); ++i) {
+      binding_ids_.push_back(itemToString(bindings_[i].binding.get()));
+    }
+  }
+
+  std::vector<ModelItem<Binding>> bindings_;
+
+  std::vector<Item> all_items_;
+  std::vector<std::string> all_item_ids_;
+  mutable std::vector<std::string> binding_ids_;
+
+  roo_collections::FlatSmallHashMap<roo_io::string_view, Item> item_id_mapping_;
+};
+
+class ThermometerSelectorModel
+    : public SimpleSelectorModel<roo_transceivers::SensorLocator,
+                                 roo_transceivers::SensorBinding>,
+      public roo_transceivers::EventListener {
+ public:
+  using Base = SimpleSelectorModel<roo_transceivers::SensorLocator,
+                                   roo_transceivers::SensorBinding>;
+
+  ThermometerSelectorModel(
+      const roo_windows::Environment* env, roo_transceivers::Universe& sensors,
+      std::vector<ModelItem<roo_transceivers::SensorBinding>> bindings)
+      : Base(env, std::move(bindings)), transceivers_(sensors) {
+    state_ui_.widget_creator_fn = [env]() {
+      return std::unique_ptr<roo_windows::Widget>(
+          new roo_windows::TextLabel(*env, "", roo_windows::font_subtitle1()));
+    };
+    state_ui_.widget_setter_fn = [this](roo_io::string_view item_id,
+                                        roo_windows::Widget& dest) {
+      updateDisplayValue(item_id, (roo_windows::TextLabel&)dest);
+    };
+    state_ui_.icon = &SCALED_ROO_ICON(filled, device_thermostat);
+    state_ui_.canonical_id = "1-Wire:DDDDDDDDDDDDDDDD";
+    state_ui_.labels = {
+        .list_title = kStrThermometers,
+        .item_details_title = kStrThermometerDetails,
+        .assign = kStrAssign,
+        .unassign = kStrUnassign,
+        .unassign_question = kStrUnassignQuestion,
+        .unassign_question_supporting_text = kStrUnassignSupportingText,
+        .unassigned = kStrNotAssigned,
+        .assign_from_list = kStrSelectThermometer};
+    transceivers_.addEventListener(this);
+    updateSensors();
+    notifyItemsChanged();
+  }
+
+  ~ThermometerSelectorModel() { transceivers_.removeEventListener(this); }
+
+  void requestUpdate() override { transceivers_.requestUpdate(); }
 
   void devicesChanged() override {
     updateSensors();
@@ -114,72 +158,57 @@ class ThermometerSelectorModel : public roo_control::TransceiverEventListener,
   const Ui* ui() const override { return &state_ui_; }
 
  private:
-  void updateSensors() {
-    all_sensors_.clear();
-    all_item_ids_.clear();
-    item_id_mapping_.clear();
-
+  std::string itemToString(
+      const roo_transceivers::SensorLocator& locator) const override {
     char buf[64];
-    roo_control_TransceiverDescriptor descriptor;
-    sensors_.forEachDevice(
-        [&](const roo_control::TransceiverDeviceLocator& device_loc) {
-          if (!sensors_.getDeviceDescriptor(device_loc, descriptor)) {
+    locator.write_cstr(buf);
+    return buf;
+  }
+
+  void updateSensors() {
+    clear();
+    roo_transceivers_Descriptor descriptor;
+    transceivers_.forEachDevice(
+        [&](const roo_transceivers::DeviceLocator& device_loc) {
+          if (!transceivers_.getDeviceDescriptor(device_loc, descriptor)) {
             LOG(ERROR) << "No descriptor for " << device_loc;
             return true;
           }
           for (size_t sensor_idx = 0; sensor_idx < descriptor.sensors_count;
                ++sensor_idx) {
             if (descriptor.sensors[sensor_idx].quantity !=
-                roo_control_Quantity_kTemperature) {
+                roo_transceivers_Quantity_kTemperature) {
               continue;
             }
-            roo_control::TransceiverSensorLocator sensor_loc(
+            roo_transceivers::SensorLocator sensor_loc(
                 device_loc, descriptor.sensors[sensor_idx].id);
-            all_sensors_.push_back(sensor_loc);
-            sensor_loc.write_cstr(buf);
-            all_item_ids_.emplace_back(buf);
+            addItem(sensor_loc);
           }
           return true;
         });
-    for (size_t i = 0; i < all_sensors_.size(); ++i) {
-      item_id_mapping_[all_item_ids_[i]] = all_sensors_[i];
+  }
+
+  void updateDisplayValue(roo_io::string_view item_id,
+                          roo_windows::TextLabel& dest) const {
+    const roo_transceivers::SensorLocator* sensor_loc = lookupItem(item_id);
+    if (sensor_loc == nullptr) {
+      dest.setText("");
+      return;
+    }
+    roo_transceivers::Measurement m = transceivers_.read(*sensor_loc);
+    if (!m.isDefined()) {
+      dest.setText("");
+    } else {
+      // if (m.value() >= 85 || m.value() <= -55) {
+      //   label.setTextf("");
+      // } else {
+      CHECK_EQ(roo_transceivers_Quantity_kTemperature, m.quantity());
+      dest.setTextf("%3.1f°C", m.value());
+      // }
     }
   }
 
-  roo_control::TransceiverSensorLocator deviceIdFromItemId(
-      roo_io::string_view item_id) const {
-    auto itr = item_id_mapping_.find(item_id);
-    if (itr == item_id_mapping_.end()) {
-      return roo_control::TransceiverSensorLocator();
-    }
-    return itr->second;
-  }
-
-  void initBindings() const {
-    if (binding_ids_.size() == bindings_.size()) return;
-    char buf[64];
-    for (size_t i = 0; i < bindings_.size(); ++i) {
-      roo_control::TransceiverSensorLocator loc = bindings_[i].binding.get();
-      if (!loc.isDefined()) {
-        binding_ids_.push_back("");
-        continue;
-      }
-      bindings_[i].binding.get().write_cstr(buf);
-      binding_ids_.emplace_back(buf);
-    }
-  }
-
-  roo_control::TransceiverUniverse& sensors_;
-  std::vector<ModelItem> bindings_;
-
-  std::vector<roo_control::TransceiverSensorLocator> all_sensors_;
-  std::vector<std::string> all_item_ids_;
-  mutable std::vector<std::string> binding_ids_;
-
-  roo_collections::FlatSmallHashMap<roo_io::string_view,
-                                    roo_control::TransceiverSensorLocator>
-      item_id_mapping_;
-
+  roo_transceivers::Universe& transceivers_;
   Ui state_ui_;
 };
 
