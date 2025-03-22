@@ -16,7 +16,6 @@
 #include "roo_windows/widgets/icon.h"
 #include "roo_windows/widgets/progress_bar.h"
 #include "roo_windows/widgets/switch.h"
-// #include "roo_windows/widgets/text_block.h"
 #include "roo_windows/widgets/text_label.h"
 #include "roo_windows_onewire/model.h"
 
