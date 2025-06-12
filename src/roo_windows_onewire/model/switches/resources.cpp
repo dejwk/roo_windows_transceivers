@@ -22,6 +22,9 @@ const char* kStrUnassignSwitchSupportingText =
 const char* kStrSwitchNotAssigned = "(nieprzypisany)";
 const char* kStrSelectSwitch = "Przypisz przełącznik";
 
+const char* kStrSwitchOn = "Wł";
+const char* kStrSwitchOff = "Wył";
+
 #else
 
 const char* kStrSwitches = "Switches";
@@ -39,6 +42,9 @@ const char* kStrUnassignSwitchSupportingText =
     "The switch will be no longer\n"
     "actie, and it will require \n"
     "re-assignment";
+
+const char* kStrSwitchOn = "On";
+const char* kStrSwitchOff = "Off";
 
 #endif
 

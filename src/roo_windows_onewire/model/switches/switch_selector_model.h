@@ -28,7 +28,7 @@ class SwitchSelectorModel
       updateDisplayValue(item_id, (roo_windows::TextLabel&)dest);
     };
     state_ui_.icon = &SCALED_ROO_ICON(filled, device_thermostat);
-    state_ui_.canonical_id = "roo:DD-DD-DD-DD-DD-DD";
+    state_ui_.canonical_id = "roo:DD-DD-DD-DD-DD-DD/relay24";
     state_ui_.labels = {
         .list_title = kStrSwitches,
         .item_details_title = kStrSwitchDetails,
@@ -61,8 +61,8 @@ class SwitchSelectorModel
           roo_transceivers_Quantity_kBinaryState) {
         continue;
       }
-      if (descriptor.sensors[actuator_idx].id !=
-          descriptor.actuators[actuator_idx].id) {
+      if (strcmp(descriptor.sensors[actuator_idx].id,
+                 descriptor.actuators[actuator_idx].id) != 0) {
         continue;
       }
       if (descriptor.sensors[actuator_idx].quantity !=
@@ -88,12 +88,10 @@ class SwitchSelectorModel
     if (!m.isDefined()) {
       dest.setText("");
     } else {
-      // if (m.value() >= 85 || m.value() <= -55) {
-      //   label.setTextf("");
-      // } else {
-      CHECK_EQ(roo_transceivers_Quantity_kTemperature, m.quantity());
-      dest.setTextf("%3.1f°C", m.value());
-      // }
+      CHECK_EQ(roo_transceivers_Quantity_kBinaryState, m.quantity());
+      dest.setTextf(m.value() == 0.0f   ? kStrSwitchOff
+                    : m.value() == 1.0f ? kStrSwitchOn
+                                        : "");
     }
   }
 
