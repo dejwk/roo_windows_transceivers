@@ -1,6 +1,6 @@
 #pragma once
 
-namespace roo_windows_onewire {
+namespace roo_windows_transceivers {
 
 extern const char* kStrSwitches;
 extern const char* kStrSwitchDetails;
@@ -17,4 +17,4 @@ extern const char* kStrSelectSwitch;
 extern const char* kStrSwitchOn;
 extern const char* kStrSwitchOff;
 
-}  // namespace roo_windows_onewire
+}  // namespace roo_windows_transceivers

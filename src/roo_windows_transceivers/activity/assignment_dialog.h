@@ -3,13 +3,14 @@
 #include <memory>
 #include <string>
 
+#include "roo_windows.h"
 #include "roo_windows/composites/radio/radio_list.h"
 #include "roo_windows/containers/list_layout.h"
 #include "roo_windows/dialogs/dialog.h"
 #include "roo_windows/dialogs/radio_list_dialog.h"
-#include "roo_windows_onewire/model.h"
+#include "roo_windows_transceivers/model.h"
 
-namespace roo_windows_onewire {
+namespace roo_windows_transceivers {
 
 class UnassignedRadioGroupItem : public roo_windows::HorizontalLayout {
  public:
@@ -58,4 +59,4 @@ class UnassignedItemSelectionDialog
   std::string selected_device_id_;
 };
 
-}  // namespace roo_windows_onewire
+}  // namespace roo_windows_transceivers

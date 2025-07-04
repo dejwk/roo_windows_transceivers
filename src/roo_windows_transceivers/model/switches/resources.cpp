@@ -1,8 +1,8 @@
-#include "roo_windows_onewire/model/thermometers/resources.h"
+#include "roo_windows_transceivers/model/thermometers/resources.h"
 
 #include "roo_windows/config.h"
 
-namespace roo_windows_onewire {
+namespace roo_windows_transceivers {
 
 #if (ROO_WINDOWS_LANG == ROO_WINDOWS_LANG_pl)
 
@@ -48,4 +48,4 @@ const char* kStrSwitchOff = "Off";
 
 #endif
 
-}  // namespace roo_windows_onewire
+}  // namespace roo_windows_transceivers

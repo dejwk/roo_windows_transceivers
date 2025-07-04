@@ -8,7 +8,7 @@
 #include "roo_windows/core/widget.h"
 #include "roo_windows/widgets/text_label.h"
 
-namespace roo_windows_onewire {
+namespace roo_windows_transceivers {
 
 struct Ui {
   roo_windows::WidgetCreatorFn widget_creator_fn;
@@ -112,4 +112,4 @@ class Model {
   roo_collections::FlatSmallHashSet<EventListener*> event_listeners_;
 };
 
-}  // namespace roo_windows_onewire
+}  // namespace roo_windows_transceivers

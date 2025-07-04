@@ -5,10 +5,10 @@
 #include "roo_transceivers/binding/binding.h"
 #include "roo_transceivers/notification.h"
 #include "roo_windows/dialogs/string_constants.h"
-#include "roo_windows/locale/languages.h"
-#include "roo_windows_onewire/model.h"
+#include "roo_locale/languages.h"
+#include "roo_windows_transceivers/model.h"
 
-namespace roo_windows_onewire {
+namespace roo_windows_transceivers {
 
 template <typename Binding>
 struct ModelItem {
@@ -154,4 +154,4 @@ class SimpleTransceiverSelectorModel
   roo_transceivers::Universe& transceivers_;
 };
 
-}  // namespace roo_windows_onewire
+}  // namespace roo_windows_transceivers

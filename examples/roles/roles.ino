@@ -11,7 +11,7 @@
 #include "roo_windows/composites/menu/basic_navigation_item.h"
 #include "roo_windows/composites/menu/menu.h"
 #include "roo_windows/containers/aligned_layout.h"
-#include "roo_windows_onewire.h"
+#include "roo_windows_transceivers.h"
 
 using namespace roo_display;
 using namespace roo_onewire;
@@ -52,7 +52,7 @@ ThermometerRoles thermometer_roles(onewire, roles);
 auto& kitchen = thermometer_roles.thermometer_role(0);
 auto& bedroom = thermometer_roles.thermometer_role(1);
 
-roo_windows_onewire::Configurator onewire_setup(env, thermometer_roles);
+roo_windows_transceivers::Configurator onewire_setup(env, thermometer_roles);
 
 class SettingsMenu : public menu::Menu {
  public:

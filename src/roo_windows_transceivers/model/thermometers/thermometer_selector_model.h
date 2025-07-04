@@ -1,10 +1,10 @@
 #pragma once
 
 #include "roo_icons/filled/device.h"
-#include "roo_windows_onewire/model/simple_model.h"
-#include "roo_windows_onewire/model/thermometers/resources.h"
+#include "roo_windows_transceivers/model/simple_model.h"
+#include "roo_windows_transceivers/model/thermometers/resources.h"
 
-namespace roo_windows_onewire {
+namespace roo_windows_transceivers {
 
 class ThermometerSelectorModel
     : public SimpleTransceiverSelectorModel<roo_transceivers::SensorLocator,
@@ -38,7 +38,6 @@ class ThermometerSelectorModel
         .unassigned = kStrNotAssigned,
         .assign_from_list = kStrSelectThermometer};
     updateSensors();
-    notifyItemsChanged();
   }
 
   const Ui* ui() const override { return &state_ui_; }
@@ -89,4 +88,4 @@ class ThermometerSelectorModel
   Ui state_ui_;
 };
 
-}  // namespace roo_windows_onewire
+}  // namespace roo_windows_transceivers

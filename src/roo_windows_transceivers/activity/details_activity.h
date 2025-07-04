@@ -2,9 +2,11 @@
 
 #include <memory>
 
+#include "roo_icons.h"
 #include "roo_icons/filled/action.h"
 #include "roo_icons/filled/content.h"
 #include "roo_icons/filled/notification.h"
+#include "roo_windows.h"
 #include "roo_windows/composites/menu/title.h"
 #include "roo_windows/config.h"
 #include "roo_windows/containers/horizontal_layout.h"
@@ -16,9 +18,9 @@
 #include "roo_windows/widgets/icon.h"
 #include "roo_windows/widgets/icon_with_caption.h"
 #include "roo_windows/widgets/text_field.h"
-#include "roo_windows_onewire/model.h"
+#include "roo_windows_transceivers/model.h"
 
-namespace roo_windows_onewire {
+namespace roo_windows_transceivers {
 
 typedef std::function<void(roo_windows::Task& task, int id)> SelectFn;
 
@@ -160,4 +162,4 @@ class DetailsActivity : public roo_windows::Activity {
   roo_windows::ScrollablePanel scrollable_container_;
 };
 
-}  // namespace roo_windows_onewire
+}  // namespace roo_windows_transceivers

@@ -1,8 +1,8 @@
-#include "roo_windows_onewire/activity/assignment_dialog.h"
+#include "roo_windows_transceivers/activity/assignment_dialog.h"
 
 using roo_windows::Dialog;
 
-namespace roo_windows_onewire {
+namespace roo_windows_transceivers {
 
 UnassignedRadioGroupItem::UnassignedRadioGroupItem(
     const roo_windows::Environment& env, const Ui* ui)
@@ -91,4 +91,4 @@ void UnassignedItemSelectionDialog::onChange() {
   RadioListDialog::onChange();
 }
 
-}  // namespace roo_windows_onewire
+}  // namespace roo_windows_transceivers

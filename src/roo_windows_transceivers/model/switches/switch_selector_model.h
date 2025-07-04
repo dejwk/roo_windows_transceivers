@@ -1,10 +1,10 @@
 #pragma once
 
 #include "roo_icons/filled/device.h"
-#include "roo_windows_onewire/model/simple_model.h"
-#include "roo_windows_onewire/model/switches/resources.h"
+#include "roo_windows_transceivers/model/simple_model.h"
+#include "roo_windows_transceivers/model/switches/resources.h"
 
-namespace roo_windows_onewire {
+namespace roo_windows_transceivers {
 
 class SwitchSelectorModel
     : public SimpleTransceiverSelectorModel<roo_transceivers::ActuatorLocator,
@@ -98,4 +98,4 @@ class SwitchSelectorModel
   Ui state_ui_;
 };
 
-}  // namespace roo_windows_onewire
+}  // namespace roo_windows_transceivers

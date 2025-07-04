@@ -1,11 +1,13 @@
 #pragma once
 
-#include "roo_windows_onewire/activity/assignment_dialog.h"
-#include "roo_windows_onewire/activity/details_activity.h"
-#include "roo_windows_onewire/activity/list_activity.h"
-#include "roo_windows_onewire/model.h"
+#include "roo_windows_transceivers/activity/assignment_dialog.h"
+#include "roo_windows_transceivers/activity/details_activity.h"
+#include "roo_windows_transceivers/activity/list_activity.h"
+#include "roo_windows_transceivers/model.h"
 
-namespace roo_windows_onewire {
+#include "roo_windows_transceivers/widgets/descriptor.h"
+
+namespace roo_windows_transceivers {
 
 class Configurator {
  public:
@@ -59,4 +61,4 @@ class Configurator {
   UnassignedItemSelectionDialog assignment_;
 };
 
-}  // namespace roo_windows_onewire
+}  // namespace roo_windows_transceivers

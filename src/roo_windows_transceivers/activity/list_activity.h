@@ -17,9 +17,9 @@
 #include "roo_windows/widgets/progress_bar.h"
 #include "roo_windows/widgets/switch.h"
 #include "roo_windows/widgets/text_label.h"
-#include "roo_windows_onewire/model.h"
+#include "roo_windows_transceivers/model.h"
 
-namespace roo_windows_onewire {
+namespace roo_windows_transceivers {
 
 typedef std::function<void(roo_windows::Task& task, int id)> ItemSelectedFn;
 
@@ -122,4 +122,4 @@ class ListActivity : public roo_windows::Activity {
   roo_scheduler::PeriodicTask refresh_task_;
 };
 
-}  // namespace roo_windows_onewire
+}  // namespace roo_windows_transceivers

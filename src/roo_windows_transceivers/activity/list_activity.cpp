@@ -1,9 +1,9 @@
-#include "roo_windows_onewire/activity/list_activity.h"
+#include "roo_windows_transceivers/activity/list_activity.h"
 
 #include "roo_windows/core/application.h"
-#include "roo_windows_onewire/model.h"
+#include "roo_windows_transceivers/model.h"
 
-namespace roo_windows_onewire {
+namespace roo_windows_transceivers {
 
 ListItem::ListItem(const roo_windows::Environment& env, ItemSelectedFn on_click,
                    const Ui* device_state_ui)
@@ -87,4 +87,4 @@ void ListActivity::onStop() {
   model_.removeEventListener(&contents_);
 }
 
-}  // namespace roo_windows_onewire
+}  // namespace roo_windows_transceivers

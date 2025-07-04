@@ -1,5 +1,5 @@
 cc_library(
-    name = "roo_windows_onewire",
+    name = "roo_windows_transceivers",
     visibility = ["//visibility:public"],
     srcs = glob(
         [
@@ -16,8 +16,7 @@ cc_library(
         "ARDUINO=10805",
     ],
     deps = [
-        "//lib/roo_onewire",
+        "//lib/roo_transceivers",
         "//lib/roo_windows",
-        "//lib/roo_control",
     ],
 )
