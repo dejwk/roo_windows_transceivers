@@ -1,0 +1,17 @@
+module(name = "roo_windows_transceivers", version = "1.0.0")
+
+local_path_override(module_name = "roo_testing", path = "/home/dawidk/Documents/roo/roo_testing")
+
+bazel_dep(name = "roo_testing", version = "1.1.1")
+
+bazel_dep(name = "roo_transceivers", version = "1.0.3")
+bazel_dep(name = "roo_windows", version = "1.3.0")
+
+local_path_override(module_name = "roo_backport", path = "../roo_backport")
+local_path_override(module_name = "roo_collections", path = "../roo_collections")
+local_path_override(module_name = "roo_flags", path = "../roo_flags")
+local_path_override(module_name = "roo_io", path = "../roo_io")
+local_path_override(module_name = "roo_logging", path = "../roo_logging")
+local_path_override(module_name = "roo_scheduler", path = "../roo_scheduler")
+local_path_override(module_name = "roo_time", path = "../roo_time")
+local_path_override(module_name = "roo_windows", path = "../roo_windows")
