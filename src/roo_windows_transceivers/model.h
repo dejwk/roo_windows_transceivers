@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 
+#include "roo_backport.h"
 #include "roo_collections/flat_small_hash_set.h"
 #include "roo_windows/core/widget.h"
 #include "roo_windows/widgets/text_label.h"
@@ -12,7 +13,7 @@ namespace roo_windows_transceivers {
 
 struct Ui {
   roo_windows::WidgetCreatorFn widget_creator_fn;
-  roo_windows::WidgetSetterFn<roo_io::string_view> widget_setter_fn;
+  roo_windows::WidgetSetterFn<roo::string_view> widget_setter_fn;
   const roo_display::Pictogram* icon;
   // Used for sizing the dialog. Should be the widest expected ID.
   const char* canonical_id;
@@ -43,14 +44,14 @@ class Model {
   virtual void requestUpdate() = 0;
 
   virtual size_t getItemCount() const = 0;
-  virtual roo_io::string_view getItemId(size_t idx) const = 0;
+  virtual roo::string_view getItemId(size_t idx) const = 0;
 
   virtual size_t getBindingCount() const = 0;
-  virtual roo_io::string_view getBindingLabel(size_t idx) const = 0;
-  virtual roo_io::string_view getBindingItemId(size_t idx) const = 0;
+  virtual roo::string_view getBindingLabel(size_t idx) const = 0;
+  virtual roo::string_view getBindingItemId(size_t idx) const = 0;
   virtual bool isBound(size_t idx) const = 0;
 
-  virtual void bind(size_t idx, roo_io::string_view item_id) = 0;
+  virtual void bind(size_t idx, roo::string_view item_id) = 0;
   virtual void unbind(size_t idx) = 0;
 
   virtual const Ui* ui() const = 0;
@@ -67,7 +68,7 @@ class Model {
 
   size_t getUnassignedItemCount() const { return unassigned_items_.size(); }
 
-  roo_io::string_view getUnassignedItemId(size_t idx) const {
+  roo::string_view getUnassignedItemId(size_t idx) const {
     return getItemId(unassigned_items_[idx]);
   }
 

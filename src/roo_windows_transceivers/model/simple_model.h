@@ -30,16 +30,16 @@ class SimpleSelectorModel : public Model {
 
   size_t getBindingCount() const override { return bindings_.size(); }
 
-  roo_io::string_view getBindingLabel(size_t idx) const override {
+  roo::string_view getBindingLabel(size_t idx) const override {
     return bindings_[idx].label;
   }
 
-  roo_io::string_view getBindingItemId(size_t idx) const override {
+  roo::string_view getBindingItemId(size_t idx) const override {
     initBindings();
     return binding_ids_[idx];
   }
 
-  void bind(size_t idx, roo_io::string_view item_id) override {
+  void bind(size_t idx, roo::string_view item_id) override {
     initBindings();
     bindings_[idx].binding.bind(item_id_mapping_[item_id]);
     binding_ids_[idx] = std::string(item_id.data(), item_id.size());
@@ -59,7 +59,7 @@ class SimpleSelectorModel : public Model {
 
   size_t getItemCount() const override { return all_items_.size(); }
 
-  roo_io::string_view getItemId(size_t idx) const override {
+  roo::string_view getItemId(size_t idx) const override {
     return all_item_ids_[idx];
   }
 
@@ -78,7 +78,7 @@ class SimpleSelectorModel : public Model {
     item_id_mapping_[all_item_ids_.back()] = all_items_.back();
   }
 
-  const Item* lookupItem(roo_io::string_view item_id) const {
+  const Item* lookupItem(roo::string_view item_id) const {
     auto itr = item_id_mapping_.find(item_id);
     if (itr == item_id_mapping_.end()) {
       return nullptr;
@@ -103,7 +103,7 @@ class SimpleSelectorModel : public Model {
   std::vector<std::string> all_item_ids_;
   mutable std::vector<std::string> binding_ids_;
 
-  roo_collections::FlatSmallHashMap<roo_io::string_view, Item> item_id_mapping_;
+  roo_collections::FlatSmallHashMap<roo::string_view, Item> item_id_mapping_;
 };
 
 template <typename Item, typename Binding>

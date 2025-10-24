@@ -22,7 +22,7 @@ class ThermometerSelectorModel
       return std::unique_ptr<roo_windows::Widget>(
           new roo_windows::TextLabel(*env, "", roo_windows::font_subtitle1()));
     };
-    state_ui_.widget_setter_fn = [this](roo_io::string_view item_id,
+    state_ui_.widget_setter_fn = [this](roo::string_view item_id,
                                         roo_windows::Widget& dest) {
       updateDisplayValue(item_id, (roo_windows::TextLabel&)dest);
     };
@@ -65,7 +65,7 @@ class ThermometerSelectorModel
     }
   }
 
-  void updateDisplayValue(roo_io::string_view item_id,
+  void updateDisplayValue(roo::string_view item_id,
                           roo_windows::TextLabel& dest) const {
     const roo_transceivers::SensorLocator* sensor_loc = lookupItem(item_id);
     if (sensor_loc == nullptr) {

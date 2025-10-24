@@ -38,7 +38,7 @@ int UnassignedRadioGroupModel::elementCount() const {
 
 void UnassignedRadioGroupModel::set(int idx,
                                     UnassignedRadioGroupItem& dest) const {
-  roo_io::string_view v = model_.getUnassignedItemId(idx);
+  roo::string_view v = model_.getUnassignedItemId(idx);
   dest.set(std::string(v.data(), v.size()));
 }
 
@@ -85,7 +85,7 @@ void UnassignedItemSelectionDialog::onChange() {
   int s = selected();
   selected_device_id_ = "";
   if (s >= 0) {
-    roo_io::string_view v = model_.getUnassignedItemId(s);
+    roo::string_view v = model_.getUnassignedItemId(s);
     selected_device_id_ = std::string(v.data(), v.size());
   }
   RadioListDialog::onChange();
