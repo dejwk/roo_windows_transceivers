@@ -4,7 +4,6 @@
 #include "roo_windows_transceivers/activity/details_activity.h"
 #include "roo_windows_transceivers/activity/list_activity.h"
 #include "roo_windows_transceivers/model.h"
-
 #include "roo_windows_transceivers/widgets/descriptor.h"
 
 namespace roo_windows_transceivers {
@@ -36,7 +35,8 @@ class Configurator {
   }
 
   void assignItem(roo_windows::Task& task, int idx) {
-    task.showDialog(assignment_, [&task, this, idx](int dialog_response_id) {
+    task.getApplication().showDialog(assignment_, [&task, this, idx](
+                                                      int dialog_response_id) {
       if (dialog_response_id == 1) {
         model_.bind(idx, model_.getUnassignedItemId(assignment_.selected()));
       }
@@ -44,7 +44,7 @@ class Configurator {
   }
 
   void unassignItem(roo_windows::Task& task, int idx) {
-    task.showAlertDialog(
+    task.getApplication().showAlertDialog(
         model_.ui()->labels.unassign_question,
         model_.ui()->labels.unassign_question_supporting_text,
         {roo_windows::kStrDialogCancel, roo_windows::kStrDialogOK},
