@@ -13,17 +13,16 @@ ListItem::ListItem(const roo_windows::Environment& env, ItemSelectedFn on_click,
       reading_(device_state_ui->widget_creator_fn()),
       on_click_(on_click),
       device_state_ui_(device_state_ui) {
-  setGravity(roo_windows::Gravity(roo_windows::kHorizontalGravityNone,
-                                  roo_windows::kVerticalGravityMiddle));
+  setGravity(roo_windows::kGravityMiddle);
   add(thermometer_icon_);
 
-  id_.setMargins(roo_windows::MARGIN_NONE);
-  id_.setPadding(roo_windows::PADDING_TINY);
-  add(id_, HorizontalLayout::Params().setWeight(1));
+  id_.setMargins(roo_windows::MarginSize::NONE);
+  id_.setPadding(roo_windows::PaddingSize::TINY);
+  add(id_, { weight : 1 });
 
-  // reading_.setMargins(roo_windows::MARGIN_NONE);
-  // reading_.setPadding(roo_windows::PADDING_REGULAR, PADDING_TINY);
-  add(*reading_, HorizontalLayout::Params().setWeight(0));
+  // reading_.setMargins(roo_windows::MarginSize::NONE);
+  // reading_.setPadding(roo_windows::PaddingSize::REGULAR, PaddingSize::TINY);
+  add(*reading_);
 }
 
 ListItem::ListItem(const ListItem& other)
@@ -34,8 +33,8 @@ ListItem::ListItem(const ListItem& other)
       on_click_(other.on_click_),
       device_state_ui_(other.device_state_ui_) {
   add(thermometer_icon_);
-  add(id_, HorizontalLayout::Params().setWeight(1));
-  add(*reading_, HorizontalLayout::Params().setWeight(0));
+  add(id_, { weight : 1 });
+  add(*reading_);
 }
 
 void ListItem::set(int idx, const Model& model) {

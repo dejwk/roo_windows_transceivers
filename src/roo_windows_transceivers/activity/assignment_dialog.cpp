@@ -10,11 +10,10 @@ UnassignedRadioGroupItem::UnassignedRadioGroupItem(
       id_(env, ui->canonical_id, roo_windows::font_subtitle1()),
       reading_(ui->widget_creator_fn()),
       ui_(ui) {
-  setGravity(roo_windows::Gravity(roo_windows::kHorizontalGravityNone,
-                                  roo_windows::kVerticalGravityMiddle));
-  id_.setMargins(roo_windows::MARGIN_NONE);
-  id_.setPadding(roo_windows::PADDING_SMALL);
-  add(id_, HorizontalLayout::Params().setWeight(1));
+  setGravity(roo_windows::kGravityMiddle);
+  id_.setMargins(roo_windows::MarginSize::NONE);
+  id_.setPadding(roo_windows::PaddingSize::SMALL);
+  add(id_, { weight : 1 });
   add(*reading_);
 }
 

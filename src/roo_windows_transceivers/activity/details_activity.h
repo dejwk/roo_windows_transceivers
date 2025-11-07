@@ -34,9 +34,9 @@ class DetailsActivityContents : public roo_windows::VerticalLayout,
         model_(model),
         title_(env, model.ui()->labels.item_details_title),
         name_(env, "", roo_windows::font_subtitle1(),
-              roo_display::kCenter | roo_display::kMiddle),
+              roo_windows::kGravityCenter | roo_windows::kGravityMiddle),
         id_(env, "", roo_windows::font_caption(),
-            roo_display::kCenter | roo_display::kMiddle),
+            roo_windows::kGravityCenter | roo_windows::kGravityMiddle),
         reading_(model.ui()->widget_creator_fn()),
         //  roo_display::kCenter | roo_display::kMiddle),
         d1_(env),
@@ -45,37 +45,33 @@ class DetailsActivityContents : public roo_windows::VerticalLayout,
                          model.ui()->labels.unassign),
         button_assign_(env, SCALED_ROO_ICON(filled, content_link),
                        model.ui()->labels.assign) {
-    setGravity(roo_windows::Gravity(roo_windows::kHorizontalGravityCenter,
-                                    roo_windows::kVerticalGravityMiddle));
+    setGravity(roo_windows::kGravityMiddle);
     // edit_.setOnInteractiveChange(edit_fn);
     button_assign_.setOnInteractiveChange(assign_fn);
     button_unassign_.setOnInteractiveChange(unassign_fn);
     // title_.add(edit_, roo_windows::HorizontalLayout::Params());
-    add(title_, VerticalLayout::Params().setGravity(
-                    roo_windows::kHorizontalGravityLeft));
-    // indicator_.setPadding(roo_windows::PADDING_TINY);
+    add(title_, {gravity : roo_windows::kGravityLeft});
+    // indicator_.setPadding(roo_windows::PaddingSize::TINY);
     // add(indicator_, VerticalLayout::Params());
-    name_.setPadding(roo_windows::PADDING_NONE);
-    name_.setMargins(roo_windows::MARGIN_NONE);
-    // id_.setPadding(roo_windows::PADDING_NONE);
-    // id_.setMargins(roo_windows::MARGIN_NONE);
-    add(name_, VerticalLayout::Params());
-    add(id_, VerticalLayout::Params());
+    name_.setPadding(roo_windows::PaddingSize::NONE);
+    name_.setMargins(roo_windows::MarginSize::NONE);
+    // id_.setPadding(roo_windows::PaddingSize::NONE);
+    // id_.setMargins(roo_windows::MarginSize::NONE);
+    add(name_);
+    add(id_);
     add(*reading_);
-    add(d1_, VerticalLayout::Params().setWeight(1));
+    add(d1_, {weight : 1});
     // indicator_.setConnectionStatus(roo_windows::WifiIndicator::DISCONNECTED);
     actions_.setUseLargestChild(true);
-    button_unassign_.setPadding(roo_windows::PADDING_LARGE,
-                                roo_windows::PADDING_SMALL);
-    button_assign_.setPadding(roo_windows::PADDING_LARGE,
-                              roo_windows::PADDING_SMALL);
+    button_unassign_.setPadding(roo_windows::PaddingSize::LARGE,
+                                roo_windows::PaddingSize::SMALL);
+    button_assign_.setPadding(roo_windows::PaddingSize::LARGE,
+                              roo_windows::PaddingSize::SMALL);
     roo_display::Color pri = env.theme().color.primary;
     button_unassign_.setColor(pri);
     button_assign_.setColor(pri);
-    actions_.add(button_unassign_,
-                 roo_windows::HorizontalLayout::Params().setWeight(1));
-    actions_.add(button_assign_,
-                 roo_windows::HorizontalLayout::Params().setWeight(1));
+    actions_.add(button_unassign_, {weight : 1});
+    actions_.add(button_assign_, {weight : 1});
 
     add(actions_, VerticalLayout::Params());
   }
