@@ -18,22 +18,10 @@ ListItem::ListItem(const roo_windows::Environment& env, ItemSelectedFn on_click,
 
   id_.setMargins(roo_windows::MarginSize::NONE);
   id_.setPadding(roo_windows::PaddingSize::TINY);
-  add(id_, { weight : 1 });
+  add(id_, {weight : 1});
 
   // reading_.setMargins(roo_windows::MarginSize::NONE);
   // reading_.setPadding(roo_windows::PaddingSize::REGULAR, PaddingSize::TINY);
-  add(*reading_);
-}
-
-ListItem::ListItem(const ListItem& other)
-    : HorizontalLayout(other),
-      thermometer_icon_(other.thermometer_icon_),
-      id_(other.id_),
-      reading_(other.device_state_ui_->widget_creator_fn()),
-      on_click_(other.on_click_),
-      device_state_ui_(other.device_state_ui_) {
-  add(thermometer_icon_);
-  add(id_, { weight : 1 });
   add(*reading_);
 }
 
@@ -49,7 +37,9 @@ ListModel::ListModel(Model& model) : model_(model) {}
 
 int ListModel::elementCount() const { return model_.getBindingCount(); }
 
-void ListModel::set(int idx, ListItem& dest) const { dest.set(idx, model_); }
+void ListModel::set(int idx, roo_windows::Widget& dest) const {
+  ((ListItem&)dest).set(idx, model_);
+}
 
 ListActivity::ListActivity(const roo_windows::Environment& env,
                            roo_scheduler::Scheduler& scheduler, Model& model,
@@ -67,8 +57,10 @@ ListActivityContents::ListActivityContents(
       model_(model),
       title_(env, model.ui()->labels.list_title),
       list_model_(model),
-      list_(env, list_model_,
-            ListItem(env, thermometer_selected_fn, model.ui())) {
+      list_(env, list_model_, [&, thermometer_selected_fn]() {
+        return std::unique_ptr<Widget>(
+            new ListItem(env, thermometer_selected_fn, model.ui()));
+      }) {
   add(title_);
   add(list_, VerticalLayout::Params());
 }

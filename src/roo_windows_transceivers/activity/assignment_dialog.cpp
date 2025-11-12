@@ -13,15 +13,7 @@ UnassignedRadioGroupItem::UnassignedRadioGroupItem(
   setGravity(roo_windows::kGravityMiddle);
   id_.setMargins(roo_windows::MarginSize::NONE);
   id_.setPadding(roo_windows::PaddingSize::SMALL);
-  add(id_, { weight : 1 });
-  add(*reading_);
-}
-
-UnassignedRadioGroupItem::UnassignedRadioGroupItem(
-    const UnassignedRadioGroupItem& other)
-    : HorizontalLayout(other), id_(other.id_), ui_(other.ui_) {
-  reading_ = ui_->widget_creator_fn();
-  add(id_);
+  add(id_, {weight : 1});
   add(*reading_);
 }
 
@@ -35,16 +27,18 @@ int UnassignedRadioGroupModel::elementCount() const {
   return model_.getUnassignedItemCount();
 }
 
-void UnassignedRadioGroupModel::set(int idx,
-                                    UnassignedRadioGroupItem& dest) const {
+void UnassignedRadioGroupModel::set(int idx, roo_windows::Widget& dest) const {
   roo::string_view v = model_.getUnassignedItemId(idx);
-  dest.set(std::string(v.data(), v.size()));
+  ((UnassignedRadioGroupItem&)dest).set(std::string(v.data(), v.size()));
 }
 
 UnassignedItemSelectionDialog::UnassignedItemSelectionDialog(
     const roo_windows::Environment& env, Model& model)
-    : roo_windows::RadioListDialog<UnassignedRadioGroupModel>(
-          env, UnassignedRadioGroupItem(env, model.ui())),
+    : roo_windows::RadioListDialog(
+          env,
+          [&]() {
+            return std::make_unique<UnassignedRadioGroupItem>(env, model.ui());
+          }),
       model_(model),
       list_model_(model) {
   setTitle(model.ui()->labels.assign_from_list);

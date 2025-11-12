@@ -55,21 +55,21 @@ class ListItem : public roo_windows::HorizontalLayout {
   const Ui* device_state_ui_;
 };
 
-class ListModel : public roo_windows::ListModel<ListItem> {
+class ListModel : public roo_windows::ListModel {
  public:
   ListModel(Model& model);
 
   int elementCount() const override;
-  void set(int idx, ListItem& dest) const override;
+  void set(int idx, roo_windows::Widget& dest) const override;
 
  private:
   Model& model_;
 };
 
 // The list of WiFi networks.
-class List : public roo_windows::ListLayout<ListItem> {
+class List : public roo_windows::ListLayout {
  public:
-  using roo_windows::ListLayout<ListItem>::ListLayout;
+  using roo_windows::ListLayout::ListLayout;
 };
 
 // All of the widgets of the list activity.

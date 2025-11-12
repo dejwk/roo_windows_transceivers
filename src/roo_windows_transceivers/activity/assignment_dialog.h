@@ -26,21 +26,19 @@ class UnassignedRadioGroupItem : public roo_windows::HorizontalLayout {
   const Ui* ui_;
 };
 
-class UnassignedRadioGroupModel
-    : public roo_windows::ListModel<UnassignedRadioGroupItem> {
+class UnassignedRadioGroupModel : public roo_windows::RadioListModel {
  public:
   UnassignedRadioGroupModel(Model& model) : model_(model) {}
 
   int elementCount() const override;
-  void set(int idx, UnassignedRadioGroupItem& dest) const override;
+  void set(int idx, roo_windows::Widget& dest) const override;
 
  private:
   Model& model_;
 };
 
-class UnassignedItemSelectionDialog
-    : public roo_windows::RadioListDialog<UnassignedRadioGroupModel>,
-      public Model::EventListener {
+class UnassignedItemSelectionDialog : public roo_windows::RadioListDialog,
+                                      public Model::EventListener {
  public:
   UnassignedItemSelectionDialog(const roo_windows::Environment& env,
                                 Model& model);
