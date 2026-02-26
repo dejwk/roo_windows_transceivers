@@ -1,5 +1,9 @@
 #pragma once
 
+/// Umbrella header for the roo_windows_transceivers module.
+///
+/// Provides transceiver-focused activities and widgets for roo_windows.
+
 #include "roo_windows_transceivers/activity/assignment_dialog.h"
 #include "roo_windows_transceivers/activity/details_activity.h"
 #include "roo_windows_transceivers/activity/list_activity.h"
