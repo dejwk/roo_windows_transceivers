@@ -14,7 +14,7 @@ namespace roo_windows_transceivers {
 
 class Configurator {
  public:
-  Configurator(const roo_windows::Environment& env, Model& model)
+  Configurator(roo_windows::ApplicationContext& env, Model& model)
       : model_(model),
         list_(env, env.scheduler(), model_,
               [this](roo_windows::Task& task, int idx) {

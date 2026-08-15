@@ -15,13 +15,13 @@ class SwitchSelectorModel
                                      roo_transceivers::ActuatorBinding>;
 
   SwitchSelectorModel(
-      const roo_windows::Environment* env,
+      roo_windows::ApplicationContext* env,
       roo_transceivers::Universe& transceivers,
       std::vector<ModelItem<roo_transceivers::ActuatorBinding>> bindings)
       : Base(env, transceivers, std::move(bindings)) {
     state_ui_.widget_creator_fn = [env]() {
       return std::unique_ptr<roo_windows::Widget>(
-          new roo_windows::TextLabel(*env, "", roo_windows::font_subtitle1()));
+          new roo_windows::TextLabel(*env, "", roo_windows::material2::text_style_subtitle1()));
     };
     state_ui_.widget_setter_fn = [this](roo::string_view item_id,
                                         roo_windows::Widget& dest) {

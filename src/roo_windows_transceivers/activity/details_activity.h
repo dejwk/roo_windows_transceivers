@@ -27,15 +27,15 @@ typedef std::function<void(roo_windows::Task& task, int id)> SelectFn;
 class DetailsActivityContents : public roo_windows::VerticalLayout,
                                 public Model::EventListener {
  public:
-  DetailsActivityContents(const roo_windows::Environment& env, Model& model,
+  DetailsActivityContents(roo_windows::ApplicationContext& env, Model& model,
                           std::function<void()> assign_fn,
                           std::function<void()> unassign_fn)
       : roo_windows::VerticalLayout(env),
         model_(model),
         title_(env, model.ui()->labels.item_details_title),
-        name_(env, "", roo_windows::font_subtitle1(),
+        name_(env, "", roo_windows::material2::text_style_subtitle1(),
               roo_windows::kGravityCenter | roo_windows::kGravityMiddle),
-        id_(env, "", roo_windows::font_caption(),
+        id_(env, "", roo_windows::material2::text_style_caption(),
             roo_windows::kGravityCenter | roo_windows::kGravityMiddle),
         reading_(model.ui()->widget_creator_fn()),
         //  roo_display::kCenter | roo_display::kMiddle),
@@ -51,23 +51,23 @@ class DetailsActivityContents : public roo_windows::VerticalLayout,
     button_unassign_.setOnInteractiveChange(unassign_fn);
     // title_.add(edit_, roo_windows::HorizontalLayout::Params());
     add(title_, {gravity : roo_windows::kGravityLeft});
-    // indicator_.setPadding(roo_windows::PaddingSize::TINY);
+    // indicator_.setPadding(roo_windows::PaddingSize::kTiny);
     // add(indicator_, VerticalLayout::Params());
-    name_.setPadding(roo_windows::PaddingSize::NONE);
-    name_.setMargins(roo_windows::MarginSize::NONE);
-    // id_.setPadding(roo_windows::PaddingSize::NONE);
-    // id_.setMargins(roo_windows::MarginSize::NONE);
+    name_.setPadding(roo_windows::PaddingSize::kNone);
+    name_.setMargins(roo_windows::MarginSize::kNone);
+    // id_.setPadding(roo_windows::PaddingSize::kNone);
+    // id_.setMargins(roo_windows::MarginSize::kNone);
     add(name_);
     add(id_);
     add(*reading_);
     add(d1_, {weight : 1});
     // indicator_.setConnectionStatus(roo_windows::WifiIndicator::DISCONNECTED);
     actions_.setUseLargestChild(true);
-    button_unassign_.setPadding(roo_windows::PaddingSize::LARGE,
-                                roo_windows::PaddingSize::SMALL);
-    button_assign_.setPadding(roo_windows::PaddingSize::LARGE,
-                              roo_windows::PaddingSize::SMALL);
-    roo_display::Color pri = env.theme().color.primary;
+    button_unassign_.setPadding(roo_windows::PaddingSize::kLarge,
+                                roo_windows::PaddingSize::kSmall);
+    button_assign_.setPadding(roo_windows::PaddingSize::kLarge,
+                              roo_windows::PaddingSize::kSmall);
+    roo_display::Color pri = env.theme().material3Theme().color.primary;
     button_unassign_.setColor(pri);
     button_assign_.setColor(pri);
     actions_.add(button_unassign_, {weight : 1});
@@ -118,7 +118,7 @@ class DetailsActivityContents : public roo_windows::VerticalLayout,
 
 class DetailsActivity : public roo_windows::Activity {
  public:
-  DetailsActivity(const roo_windows::Environment& env, Model& model,
+  DetailsActivity(roo_windows::ApplicationContext& env, Model& model,
                   SelectFn assign_fn, SelectFn unassign_fn)
       : roo_windows::Activity(),
         idx_(),

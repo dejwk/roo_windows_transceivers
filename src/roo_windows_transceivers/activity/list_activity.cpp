@@ -5,23 +5,24 @@
 
 namespace roo_windows_transceivers {
 
-ListItem::ListItem(const roo_windows::Environment& env, ItemSelectedFn on_click,
+ListItem::ListItem(roo_windows::ApplicationContext& env, ItemSelectedFn on_click,
                    const Ui* device_state_ui)
     : HorizontalLayout(env),
       thermometer_icon_(env, *device_state_ui->icon),
-      id_(env, "", roo_windows::font_subtitle1()),
+      id_(env, "", roo_windows::material2::text_style_subtitle1()),
       reading_(device_state_ui->widget_creator_fn()),
       on_click_(on_click),
       device_state_ui_(device_state_ui) {
   setGravity(roo_windows::kGravityMiddle);
   add(thermometer_icon_);
 
-  id_.setMargins(roo_windows::MarginSize::NONE);
-  id_.setPadding(roo_windows::PaddingSize::TINY);
+  id_.setMargins(roo_windows::MarginSize::kNone);
+  id_.setPadding(roo_windows::PaddingSize::kTiny);
   add(id_, {weight : 1});
 
-  // reading_.setMargins(roo_windows::MarginSize::NONE);
-  // reading_.setPadding(roo_windows::PaddingSize::REGULAR, PaddingSize::TINY);
+  // reading_.setMargins(roo_windows::MarginSize::kNone);
+  // reading_.setPadding(roo_windows::PaddingSize::kRegular,
+  // PaddingSize::kTiny);
   add(*reading_);
 }
 
@@ -30,7 +31,9 @@ void ListItem::set(int idx, const Model& model) {
   id_.setText(model.getBindingLabel(idx_));
   // roo_control::Measurement m = model.sensors().read(model.getBinding(idx_));
   device_state_ui_->widget_setter_fn(model.getBindingItemId(idx_), *reading_);
-  thermometer_icon_.setVisibility(model.isBound(idx_) ? VISIBLE : INVISIBLE);
+  thermometer_icon_.setVisibility(model.isBound(idx_)
+                                      ? roo_windows::Visibility::kVisible
+                                      : roo_windows::Visibility::kInvisible);
 }
 
 ListModel::ListModel(Model& model) : model_(model) {}
@@ -41,7 +44,7 @@ void ListModel::set(int idx, roo_windows::Widget& dest) const {
   ((ListItem&)dest).set(idx, model_);
 }
 
-ListActivity::ListActivity(const roo_windows::Environment& env,
+ListActivity::ListActivity(roo_windows::ApplicationContext& env,
                            roo_scheduler::Scheduler& scheduler, Model& model,
                            ItemSelectedFn thermometer_selected_fn)
     : model_(model),
@@ -51,7 +54,7 @@ ListActivity::ListActivity(const roo_windows::Environment& env,
                     [this]() { model_.requestUpdate(); }) {}
 
 ListActivityContents::ListActivityContents(
-    const roo_windows::Environment& env, Model& model,
+    roo_windows::ApplicationContext& env, Model& model,
     ItemSelectedFn thermometer_selected_fn)
     : VerticalLayout(env),
       model_(model),

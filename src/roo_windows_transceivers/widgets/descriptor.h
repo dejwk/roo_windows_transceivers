@@ -10,7 +10,7 @@ namespace roo_windows_transceivers {
 
 class DescriptorWidget : public roo_windows::VerticalLayout {
  public:
-  DescriptorWidget(const roo_windows::Environment& env);
+  DescriptorWidget(roo_windows::ApplicationContext& env);
 
   void setDescriptor(const roo_transceivers_Descriptor& descriptor);
 

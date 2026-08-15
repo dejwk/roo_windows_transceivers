@@ -5,14 +5,14 @@ using roo_windows::Dialog;
 namespace roo_windows_transceivers {
 
 UnassignedRadioGroupItem::UnassignedRadioGroupItem(
-    const roo_windows::Environment& env, const Ui* ui)
+    roo_windows::ApplicationContext& env, const Ui* ui)
     : HorizontalLayout(env),
-      id_(env, ui->canonical_id, roo_windows::font_subtitle1()),
+      id_(env, ui->canonical_id, roo_windows::material2::text_style_subtitle1()),
       reading_(ui->widget_creator_fn()),
       ui_(ui) {
   setGravity(roo_windows::kGravityMiddle);
-  id_.setMargins(roo_windows::MarginSize::NONE);
-  id_.setPadding(roo_windows::PaddingSize::SMALL);
+  id_.setMargins(roo_windows::MarginSize::kNone);
+  id_.setPadding(roo_windows::PaddingSize::kSmall);
   add(id_, {weight : 1});
   add(*reading_);
 }
@@ -33,7 +33,7 @@ void UnassignedRadioGroupModel::set(int idx, roo_windows::Widget& dest) const {
 }
 
 UnassignedItemSelectionDialog::UnassignedItemSelectionDialog(
-    const roo_windows::Environment& env, Model& model)
+    roo_windows::ApplicationContext& env, Model& model)
     : roo_windows::RadioListDialog(
           env,
           [&]() {
@@ -42,7 +42,7 @@ UnassignedItemSelectionDialog::UnassignedItemSelectionDialog(
       model_(model),
       list_model_(model) {
   setTitle(model.ui()->labels.assign_from_list);
-  setModel(list_model_);
+  setModel(static_cast<roo_windows::ListModel&>(list_model_));
 }
 
 void UnassignedItemSelectionDialog::onEnter() {

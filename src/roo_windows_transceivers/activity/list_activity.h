@@ -25,7 +25,7 @@ typedef std::function<void(roo_windows::Task& task, int id)> ItemSelectedFn;
 
 class ListItem : public roo_windows::HorizontalLayout {
  public:
-  ListItem(const roo_windows::Environment& env, ItemSelectedFn on_click,
+  ListItem(roo_windows::ApplicationContext& env, ItemSelectedFn on_click,
            const Ui* device_state_ui);
 
   ListItem(const ListItem& other);
@@ -45,7 +45,7 @@ class ListItem : public roo_windows::HorizontalLayout {
  private:
   // bool isOpen() const { return is_open_; }
 
-  const roo_windows::Environment* env_;
+  roo_windows::ApplicationContext* env_;
   roo_windows::Icon thermometer_icon_;
   int idx_;
   roo_windows::TextLabel id_;
@@ -76,7 +76,7 @@ class List : public roo_windows::ListLayout {
 class ListActivityContents : public roo_windows::VerticalLayout,
                              public Model::EventListener {
  public:
-  ListActivityContents(const roo_windows::Environment& env, Model& model,
+  ListActivityContents(roo_windows::ApplicationContext& env, Model& model,
                        ItemSelectedFn thermometer_selected_fn);
 
   roo_windows::PreferredSize getPreferredSize() const override {
@@ -98,7 +98,7 @@ class ListActivityContents : public roo_windows::VerticalLayout,
 
 class ListActivity : public roo_windows::Activity {
  public:
-  ListActivity(const roo_windows::Environment& env,
+  ListActivity(roo_windows::ApplicationContext& env,
                roo_scheduler::Scheduler& scheduler, Model& model,
                ItemSelectedFn network_selected_fn);
 
@@ -113,7 +113,7 @@ class ListActivity : public roo_windows::Activity {
   Model& model_;
 
   ListActivityContents contents_;
-  roo_windows::ScrollablePanel scrollable_container_;
+  roo_windows::ScrollableBlitPanel scrollable_container_;
 
   // Used to periodically refresh (discover, convert) thermometers. We keep it
   // here, taking advantage of the fact that the list activity is always at the

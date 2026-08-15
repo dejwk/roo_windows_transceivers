@@ -19,7 +19,7 @@ struct ModelItem {
 template <typename Item, typename Binding>
 class SimpleSelectorModel : public Model {
  public:
-  SimpleSelectorModel(const roo_windows::Environment* env,
+  SimpleSelectorModel(roo_windows::ApplicationContext* env,
                       std::vector<ModelItem<Binding>> bindings)
       : bindings_(std::move(bindings)) {}
 
@@ -113,7 +113,7 @@ class SimpleTransceiverSelectorModel
  public:
   using Base = SimpleSelectorModel<Item, Binding>;
 
-  SimpleTransceiverSelectorModel(const roo_windows::Environment* env,
+  SimpleTransceiverSelectorModel(roo_windows::ApplicationContext* env,
                                  roo_transceivers::Universe& transceivers,
                                  std::vector<ModelItem<Binding>> bindings)
       : Base(env, std::move(bindings)), transceivers_(transceivers) {

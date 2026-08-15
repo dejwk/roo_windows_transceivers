@@ -14,7 +14,7 @@ namespace roo_windows_transceivers {
 
 class UnassignedRadioGroupItem : public roo_windows::HorizontalLayout {
  public:
-  UnassignedRadioGroupItem(const roo_windows::Environment& env, const Ui* ui);
+  UnassignedRadioGroupItem(roo_windows::ApplicationContext& env, const Ui* ui);
 
   UnassignedRadioGroupItem(const UnassignedRadioGroupItem& other);
 
@@ -40,7 +40,7 @@ class UnassignedRadioGroupModel : public roo_windows::RadioListModel {
 class UnassignedItemSelectionDialog : public roo_windows::RadioListDialog,
                                       public Model::EventListener {
  public:
-  UnassignedItemSelectionDialog(const roo_windows::Environment& env,
+  UnassignedItemSelectionDialog(roo_windows::ApplicationContext& env,
                                 Model& model);
 
   void onEnter() override;
