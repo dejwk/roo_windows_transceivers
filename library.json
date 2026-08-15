@@ -30,6 +30,6 @@
     ],
     "dependencies": {
         "dejwk/roo_transceivers": ">=1.1.6",
-        "dejwk/roo_windows": ">=1.4.2"
+        "dejwk/roo_windows": ">=1.6.0"
     }
 }

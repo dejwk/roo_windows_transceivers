@@ -52,14 +52,16 @@ ThermometerRoles thermometer_roles(onewire, roles);
 auto& kitchen = thermometer_roles.thermometer_role(0);
 auto& bedroom = thermometer_roles.thermometer_role(1);
 
-roo_windows_transceivers::Configurator onewire_setup(env, thermometer_roles);
+roo_windows_transceivers::Configurator onewire_setup(app.context(),
+                                                     thermometer_roles);
+NavigationHost navigation;
 
 class SettingsMenu : public menu::Menu {
  public:
-  SettingsMenu(const Environment& env)
-      : menu::Menu(env, "Settings"),
-        onewire_item_(env, SCALED_ROO_ICON(filled, content_link),
-                      "Thermometers", onewire_setup.main()) {
+  SettingsMenu(ApplicationContext& context, NavigationHost& navigation)
+      : menu::Menu(context, "Settings"),
+        onewire_item_(context, SCALED_ROO_ICON(filled, content_link),
+                      "Thermometers", navigation, onewire_setup.main()) {
     add(onewire_item_);
   }
 
@@ -67,23 +69,7 @@ class SettingsMenu : public menu::Menu {
   menu::BasicNavigationItem onewire_item_;
 };
 
-SettingsMenu settings_menu(env);
-
-class MainPane : public AlignedLayout {
- public:
-  MainPane(const Environment& env)
-      : AlignedLayout(env), button_(env, "Settings") {
-    add(button_, kCenter | kMiddle);
-    button_.setOnInteractiveChange(
-        [this]() { getTask()->enterActivity(&settings_menu); });
-  }
-
- private:
-  SimpleButton button_;
-};
-
-MainPane pane(env);
-SingletonActivity activity(app, pane);
+SettingsMenu settings_menu(app.context(), navigation);
 
 // Fetch temperatures every second.
 RepetitiveTask converter(scheduler, []() { onewire.update(); }, Seconds(1));
@@ -103,9 +89,10 @@ void setup() {
   display.init();
   converter.startInstantly();
   reporter.start();
+  app.addTaskFullScreen(navigation);
+  navigation.push(settings_menu);
+  app.start();
+  scheduler.run();
 }
 
-void loop() {
-  app.tick();
-  scheduler.executeEligibleTasks();
-}
+void loop() {}

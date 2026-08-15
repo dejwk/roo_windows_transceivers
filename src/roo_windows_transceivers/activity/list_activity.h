@@ -9,7 +9,7 @@
 #include "roo_windows/containers/list_layout.h"
 #include "roo_windows/containers/scrollable_panel.h"
 #include "roo_windows/containers/vertical_layout.h"
-#include "roo_windows/core/activity.h"
+#include "roo_windows/core/destination.h"
 #include "roo_windows/indicators/wifi.h"
 #include "roo_windows/widgets/blank.h"
 #include "roo_windows/widgets/divider.h"
@@ -96,7 +96,7 @@ class ListActivityContents : public roo_windows::VerticalLayout,
   List list_;
 };
 
-class ListActivity : public roo_windows::Activity {
+class ListActivity : public roo_windows::Destination {
  public:
   ListActivity(roo_windows::ApplicationContext& env,
                roo_scheduler::Scheduler& scheduler, Model& model,

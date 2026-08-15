@@ -12,7 +12,7 @@
 #include "roo_windows/containers/horizontal_layout.h"
 #include "roo_windows/containers/stacked_layout.h"
 #include "roo_windows/containers/vertical_layout.h"
-#include "roo_windows/core/activity.h"
+#include "roo_windows/core/destination.h"
 #include "roo_windows/core/task.h"
 #include "roo_windows/widgets/divider.h"
 #include "roo_windows/widgets/icon.h"
@@ -116,11 +116,11 @@ class DetailsActivityContents : public roo_windows::VerticalLayout,
   roo_windows::IconWithCaption button_assign_;
 };
 
-class DetailsActivity : public roo_windows::Activity {
+class DetailsActivity : public roo_windows::Destination {
  public:
   DetailsActivity(roo_windows::ApplicationContext& env, Model& model,
                   SelectFn assign_fn, SelectFn unassign_fn)
-      : roo_windows::Activity(),
+      : roo_windows::Destination(),
         idx_(),
         model_(model),
         contents_(
@@ -133,9 +133,9 @@ class DetailsActivity : public roo_windows::Activity {
 
   roo_windows::Widget& getContents() override { return scrollable_container_; }
 
-  void enter(roo_windows::Task& task, int idx) {
+  void enter(roo_windows::NavigationHost& navigation, int idx) {
     idx_ = idx;
-    task.enterActivity(this);
+    navigation.push(*this);
   }
 
   void onResume() override {
@@ -155,7 +155,7 @@ class DetailsActivity : public roo_windows::Activity {
   int idx_;
   Model& model_;
   DetailsActivityContents contents_;
-  roo_windows::ScrollablePanel scrollable_container_;
+  roo_windows::ScrollableBlitPanel scrollable_container_;
 };
 
 }  // namespace roo_windows_transceivers

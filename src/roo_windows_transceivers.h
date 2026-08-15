@@ -28,19 +28,19 @@ class Configurator {
             }),
         assignment_(env, model_) {}
 
-  roo_windows::Activity& main() { return list_; }
+  roo_windows::Destination& main() { return list_; }
 
   void itemSelected(roo_windows::Task& task, int idx) {
     if (model_.isBound(idx)) {
-      details_.enter(task, idx);
+      details_.enter(*task.navigationHost(), idx);
     } else {
       assignItem(task, idx);
     }
   }
 
   void assignItem(roo_windows::Task& task, int idx) {
-    task.getApplication().showDialog(assignment_, [&task, this, idx](
-                                                      int dialog_response_id) {
+    task.application().showDialog(assignment_, [this, idx](
+                                                int dialog_response_id) {
       if (dialog_response_id == 1) {
         model_.bind(idx, model_.getUnassignedItemId(assignment_.selected()));
       }
@@ -48,7 +48,7 @@ class Configurator {
   }
 
   void unassignItem(roo_windows::Task& task, int idx) {
-    task.getApplication().showAlertDialog(
+    task.application().showAlertDialog(
         model_.ui()->labels.unassign_question,
         model_.ui()->labels.unassign_question_supporting_text,
         {roo_windows::kStrDialogCancel, roo_windows::kStrDialogOK},
