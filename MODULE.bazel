@@ -1,7 +1,24 @@
-module(name = "roo_windows_transceivers", version = "1.0.0")
+module(
+    name = "roo_windows_transceivers",
+    version = "1.0.0",
+)
 
 bazel_dep(name = "rules_cc", version = "0.2.17")
+bazel_dep(name = "roo_display", version = "3.2.0")
+bazel_dep(name = "roo_onewire", version = "2.0.9")
+bazel_dep(name = "roo_scheduler", version = "2.1.9")
 bazel_dep(name = "roo_testing", version = "2.0.0")
-
+bazel_dep(name = "roo_time", version = "1.4.4")
 bazel_dep(name = "roo_transceivers", version = "1.1.6")
 bazel_dep(name = "roo_windows", version = "1.6.0")
+
+# Module overrides are root-only. Repeat roo_transceivers' nanopb override so
+# this repository remains directly buildable with Bazel 9.
+archive_override(
+    module_name = "nanopb",
+    integrity = "sha256-iCzYRzrZMrJHh+Z2qAjk+ynBLghtILy/usxmwYMJS1w=",
+    patch_strip = 1,
+    patches = ["//.roo_testing/patches:nanopb_bazel9.patch"],
+    strip_prefix = "nanopb",
+    urls = ["https://github.com/nanopb/nanopb/releases/download/nanopb-0.4.9.1/nanopb-0.4.9.1.tar.gz"],
+)
