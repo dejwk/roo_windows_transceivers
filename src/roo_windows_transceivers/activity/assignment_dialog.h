@@ -5,6 +5,7 @@
 
 #include "roo_windows.h"
 #include "roo_windows/composites/radio/radio_list.h"
+#include "roo_windows/containers/flex_layout.h"
 #include "roo_windows/containers/list_layout.h"
 #include "roo_windows/dialogs/dialog.h"
 #include "roo_windows/dialogs/radio_list_dialog.h"
@@ -12,7 +13,7 @@
 
 namespace roo_windows_transceivers {
 
-class UnassignedRadioGroupItem : public roo_windows::HorizontalLayout {
+class UnassignedRadioGroupItem : public roo_windows::FlexLayout {
  public:
   UnassignedRadioGroupItem(roo_windows::ApplicationContext& env, const Ui* ui);
 

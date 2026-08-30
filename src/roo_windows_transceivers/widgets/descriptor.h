@@ -1,14 +1,13 @@
 #pragma once
 
-#include "roo_windows/containers/vertical_layout.h"
+#include "roo_transceivers.pb.h"
+#include "roo_windows/containers/flex_layout.h"
 #include "roo_windows/core/theme.h"
 #include "roo_windows/widgets/text_label.h"
 
-#include "roo_transceivers.pb.h"
-
 namespace roo_windows_transceivers {
 
-class DescriptorWidget : public roo_windows::VerticalLayout {
+class DescriptorWidget : public roo_windows::FlexLayout {
  public:
   DescriptorWidget(roo_windows::ApplicationContext& env);
 

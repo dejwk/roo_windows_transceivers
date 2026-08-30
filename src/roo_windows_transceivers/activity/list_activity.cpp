@@ -5,25 +5,28 @@
 
 namespace roo_windows_transceivers {
 
-ListItem::ListItem(roo_windows::ApplicationContext& env, ItemSelectedFn on_click,
-                   const Ui* device_state_ui)
-    : HorizontalLayout(env),
+ListItem::ListItem(roo_windows::ApplicationContext& env,
+                   ItemSelectedFn on_click, const Ui* device_state_ui)
+    : FlexLayout(env, roo_windows::FlexDirection::kRow),
       thermometer_icon_(env, *device_state_ui->icon),
       id_(env, "", roo_windows::material2::text_style_subtitle1()),
       reading_(device_state_ui->widget_creator_fn()),
       on_click_(on_click),
       device_state_ui_(device_state_ui) {
-  setGravity(roo_windows::kGravityMiddle);
-  add(thermometer_icon_);
+  setAlignItems(roo_windows::AlignItems::kCenter);
+  setPadding(roo_windows::Padding(roo_windows::PaddingSize::kSmall,
+                                  roo_windows::PaddingSize::kTiny));
+  setGap(roo_windows::Scaled(8));
+  add(thermometer_icon_, {.flex_grow = 0, .flex_shrink = 0});
 
   id_.setMargins(roo_windows::MarginSize::kNone);
-  id_.setPadding(roo_windows::PaddingSize::kTiny);
-  add(id_, {weight : 1});
+  id_.setPadding(roo_windows::PaddingSize::kNone);
+  add(id_, {.flex_grow = 1, .flex_shrink = 1});
 
   // reading_.setMargins(roo_windows::MarginSize::kNone);
   // reading_.setPadding(roo_windows::PaddingSize::kRegular,
   // PaddingSize::kTiny);
-  add(*reading_);
+  add(*reading_, {.flex_grow = 0, .flex_shrink = 0});
 }
 
 void ListItem::set(int idx, const Model& model) {
@@ -56,7 +59,7 @@ ListActivity::ListActivity(roo_windows::ApplicationContext& env,
 ListActivityContents::ListActivityContents(
     roo_windows::ApplicationContext& env, Model& model,
     ItemSelectedFn thermometer_selected_fn)
-    : VerticalLayout(env),
+    : FlexLayout(env, roo_windows::FlexDirection::kColumn),
       model_(model),
       title_(env, model.ui()->labels.list_title),
       list_model_(model),
@@ -64,8 +67,8 @@ ListActivityContents::ListActivityContents(
         return std::unique_ptr<Widget>(
             new ListItem(env, thermometer_selected_fn, model.ui()));
       }) {
-  add(title_);
-  add(list_, VerticalLayout::Params());
+  add(title_, {.flex_grow = 0, .flex_shrink = 0});
+  add(list_, {.flex_grow = 0, .flex_shrink = 1});
 }
 
 void ListActivityContents::measurementsChanged() { list_.modelChanged(); }

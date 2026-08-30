@@ -4,11 +4,10 @@
 
 #include "roo_scheduler.h"
 #include "roo_windows/composites/menu/title.h"
+#include "roo_windows/containers/flex_layout.h"
 #include "roo_windows/containers/holder.h"
-#include "roo_windows/containers/horizontal_layout.h"
 #include "roo_windows/containers/list_layout.h"
 #include "roo_windows/containers/scrollable_panel.h"
-#include "roo_windows/containers/vertical_layout.h"
 #include "roo_windows/core/destination.h"
 #include "roo_windows/indicators/wifi.h"
 #include "roo_windows/widgets/blank.h"
@@ -23,7 +22,7 @@ namespace roo_windows_transceivers {
 
 typedef std::function<void(roo_windows::Task& task, int id)> ItemSelectedFn;
 
-class ListItem : public roo_windows::HorizontalLayout {
+class ListItem : public roo_windows::FlexLayout {
  public:
   ListItem(roo_windows::ApplicationContext& env, ItemSelectedFn on_click,
            const Ui* device_state_ui);
@@ -73,7 +72,7 @@ class List : public roo_windows::ListLayout {
 };
 
 // All of the widgets of the list activity.
-class ListActivityContents : public roo_windows::VerticalLayout,
+class ListActivityContents : public roo_windows::FlexLayout,
                              public Model::EventListener {
  public:
   ListActivityContents(roo_windows::ApplicationContext& env, Model& model,

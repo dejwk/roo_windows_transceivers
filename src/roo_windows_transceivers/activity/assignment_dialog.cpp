@@ -6,15 +6,17 @@ namespace roo_windows_transceivers {
 
 UnassignedRadioGroupItem::UnassignedRadioGroupItem(
     roo_windows::ApplicationContext& env, const Ui* ui)
-    : HorizontalLayout(env),
-      id_(env, ui->canonical_id, roo_windows::material2::text_style_subtitle1()),
+    : FlexLayout(env, roo_windows::FlexDirection::kRow),
+      id_(env, ui->canonical_id,
+          roo_windows::material2::text_style_subtitle1()),
       reading_(ui->widget_creator_fn()),
       ui_(ui) {
-  setGravity(roo_windows::kGravityMiddle);
+  setAlignItems(roo_windows::AlignItems::kCenter);
+  setGap(roo_windows::Scaled(8));
   id_.setMargins(roo_windows::MarginSize::kNone);
-  id_.setPadding(roo_windows::PaddingSize::kSmall);
-  add(id_, {weight : 1});
-  add(*reading_);
+  id_.setPadding(roo_windows::PaddingSize::kNone);
+  add(id_, {.flex_grow = 1, .flex_shrink = 1});
+  add(*reading_, {.flex_grow = 0, .flex_shrink = 0});
 }
 
 void UnassignedRadioGroupItem::set(std::string id) {
