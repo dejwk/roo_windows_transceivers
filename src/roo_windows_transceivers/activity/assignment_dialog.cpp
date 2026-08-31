@@ -48,6 +48,7 @@ UnassignedItemSelectionDialog::UnassignedItemSelectionDialog(
 }
 
 void UnassignedItemSelectionDialog::onEnter() {
+  RadioListDialog::onEnter();
   model_.addEventListener(this);
   model_.requestUpdate();
   reset();
