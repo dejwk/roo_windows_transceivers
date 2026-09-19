@@ -29,7 +29,10 @@
         "examples/**/*.ino"
     ],
     "dependencies": {
-        "dejwk/roo_transceivers": ">=1.1.6",
-        "dejwk/roo_windows": ">=1.6.0"
+        "dejwk/roo_display": ">=3.3.0",
+        "dejwk/roo_scheduler": ">=2.2.0",
+        "dejwk/roo_time": ">=2.0.0",
+        "dejwk/roo_transceivers": ">=1.2.0",
+        "dejwk/roo_windows": ">=1.7.0"
     }
 }

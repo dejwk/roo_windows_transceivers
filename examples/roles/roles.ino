@@ -105,7 +105,8 @@ roo_transceivers::BoundSensor bedroom(transceivers, &bedroom_binding);
 
 roo_windows_transceivers::Configurator onewire_setup(app.context(),
                                                      thermometer_roles);
-NavigationHost navigation;
+roo_windows::Task& task = app.addTaskFullScreen();
+NavigationHost& navigation = task.navigation();
 
 class SettingsMenu : public menu::Menu {
  public:
@@ -140,7 +141,6 @@ void setup() {
   display.init();
   converter.startInstantly();
   reporter.start();
-  app.addTaskFullScreen(navigation);
   navigation.push(settings_menu);
   app.start();
   scheduler.run();
