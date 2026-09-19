@@ -44,8 +44,8 @@ class UnassignedItemSelectionDialog : public roo_windows::RadioListDialog,
   UnassignedItemSelectionDialog(roo_windows::ApplicationContext& env,
                                 Model& model);
 
-  void onEnter() override;
-  void onExit(int result) override;
+  bool onEnter() override;
+  void onExit() override;
 
   void onChange() override;
 

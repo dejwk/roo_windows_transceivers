@@ -47,14 +47,15 @@ UnassignedItemSelectionDialog::UnassignedItemSelectionDialog(
   setModel(static_cast<roo_windows::ListModel&>(list_model_));
 }
 
-void UnassignedItemSelectionDialog::onEnter() {
+bool UnassignedItemSelectionDialog::onEnter() {
   RadioListDialog::onEnter();
   model_.addEventListener(this);
   model_.requestUpdate();
   reset();
+  return true;
 }
 
-void UnassignedItemSelectionDialog::onExit(int result) {
+void UnassignedItemSelectionDialog::onExit() {
   model_.removeEventListener(this);
 }
 

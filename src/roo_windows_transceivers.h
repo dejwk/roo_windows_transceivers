@@ -39,8 +39,7 @@ class Configurator {
   }
 
   void assignItem(roo_windows::Task& task, int idx) {
-    task.application().showDialog(assignment_, [this, idx](
-                                                int dialog_response_id) {
+    assignment_.show(task, [this, idx](int dialog_response_id) {
       if (dialog_response_id == 1) {
         model_.bind(idx, model_.getUnassignedItemId(assignment_.selected()));
       }
@@ -49,7 +48,7 @@ class Configurator {
 
   void unassignItem(roo_windows::Task& task, int idx) {
     task.application().showAlertDialog(
-        model_.ui()->labels.unassign_question,
+        task, model_.ui()->labels.unassign_question,
         model_.ui()->labels.unassign_question_supporting_text,
         {roo_windows::kStrDialogCancel, roo_windows::kStrDialogOK},
         [this, idx](int id) {
