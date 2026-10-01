@@ -98,7 +98,7 @@ class ListActivityContents : public roo_windows::FlexLayout,
 class ListActivity : public roo_windows::Destination {
  public:
   ListActivity(roo_windows::ApplicationContext& env,
-               roo_scheduler::Scheduler& scheduler, Model& model,
+               roo_scheduler::SchedulerClient& scheduler, Model& model,
                ItemSelectedFn network_selected_fn);
 
   roo_windows::Widget& getContents() override { return scrollable_container_; }

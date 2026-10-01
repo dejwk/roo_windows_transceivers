@@ -48,8 +48,8 @@ void ListModel::set(int idx, roo_windows::Widget& dest) const {
 }
 
 ListActivity::ListActivity(roo_windows::ApplicationContext& env,
-                           roo_scheduler::Scheduler& scheduler, Model& model,
-                           ItemSelectedFn thermometer_selected_fn)
+                           roo_scheduler::SchedulerClient& scheduler,
+                           Model& model, ItemSelectedFn thermometer_selected_fn)
     : model_(model),
       contents_(env, model, thermometer_selected_fn),
       scrollable_container_(env, contents_),

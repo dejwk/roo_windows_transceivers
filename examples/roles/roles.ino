@@ -54,7 +54,8 @@ struct Emulator {
   FakeOneWireInterface onewire;
 
   Emulator()
-      : viewport(), flex_viewport(viewport, 1, FlexViewport::kRotationRight),
+      : viewport(),
+        flex_viewport(viewport, 1, FlexViewport::kRotationRight),
         display(flex_viewport),
         touch(flex_viewport, FakeXpt2046Spi::Calibration(269, 249, 3829, 3684,
                                                          true, false, false)) {
@@ -77,7 +78,7 @@ Display display(screen, touch,
                 TouchCalibration(269, 249, 3829, 3684,
                                  Orientation::LeftDown()));
 
-roo_scheduler::Scheduler scheduler;
+roo_scheduler::SchedulingService scheduler;
 Environment env(scheduler);
 
 roo_windows::Application app(&env, display);
@@ -86,19 +87,19 @@ roo_onewire::OneWire onewire(kOneWirePin, scheduler);
 roo_transceivers::OneWireUniverse transceivers(onewire);
 
 enum Role { KITCHEN, BEDROOM };
-roo_transceivers::SensorBinding
-    kitchen_binding(roo_transceivers::DefaultBindingStore(), KITCHEN);
-roo_transceivers::SensorBinding
-    bedroom_binding(roo_transceivers::DefaultBindingStore(), BEDROOM);
+roo_transceivers::SensorBinding kitchen_binding(
+    roo_transceivers::DefaultBindingStore(), KITCHEN);
+roo_transceivers::SensorBinding bedroom_binding(
+    roo_transceivers::DefaultBindingStore(), BEDROOM);
 std::vector<
     roo_windows_transceivers::ModelItem<roo_transceivers::SensorBinding>>
     roles = {
         {kitchen_binding, "Kitchen"},
         {bedroom_binding, "Bedroom"},
-};
+    };
 
-roo_windows_transceivers::ThermometerSelectorModel
-    thermometer_roles(&app.context(), transceivers, roles);
+roo_windows_transceivers::ThermometerSelectorModel thermometer_roles(
+    &app.context(), transceivers, roles);
 
 roo_transceivers::BoundSensor kitchen(transceivers, &kitchen_binding);
 roo_transceivers::BoundSensor bedroom(transceivers, &bedroom_binding);
