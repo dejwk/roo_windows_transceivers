@@ -95,20 +95,20 @@ DescriptorWidget::DescriptorWidget(roo_windows::ApplicationContext& env)
 }
 
 void DescriptorWidget::setDescriptor(
-    const roo_transceivers_Descriptor& descriptor) {
+    const roo_transceivers::Descriptor& descriptor) {
   sensors_caption_.setVisibility(
-      descriptor.sensors_count > 0 ? Visibility::kVisible : Visibility::kGone);
+      descriptor.sensors_size() > 0 ? Visibility::kVisible : Visibility::kGone);
   for (size_t i = 0; i < 16; ++i) {
-    if (i < descriptor.sensors_count) {
-      sensors_[i].setText(descriptor.sensors[i].id);
+    if (i < descriptor.sensors_size()) {
+      sensors_[i].setText(descriptor.sensors(i).id().c_str());
       sensors_[i].setVisibility(Visibility::kVisible);
     } else {
       sensors_[i].setVisibility(Visibility::kGone);
     }
   }
   for (size_t i = 0; i < 16; ++i) {
-    if (i < descriptor.actuators_count) {
-      actuators_[i].setText(descriptor.actuators[i].id);
+    if (i < descriptor.actuators_size()) {
+      actuators_[i].setText(descriptor.actuators(i).id().c_str());
       actuators_[i].setVisibility(Visibility::kVisible);
     } else {
       actuators_[i].setVisibility(Visibility::kGone);

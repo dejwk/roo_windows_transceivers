@@ -19,8 +19,8 @@ class ThermometerSelectorModel
       std::vector<ModelItem<roo_transceivers::SensorBinding>> bindings)
       : Base(env, transceivers, std::move(bindings)) {
     state_ui_.widget_creator_fn = [env]() {
-      return std::unique_ptr<roo_windows::Widget>(
-          new roo_windows::TextLabel(*env, "", roo_windows::material2::text_style_subtitle1()));
+      return std::unique_ptr<roo_windows::Widget>(new roo_windows::TextLabel(
+          *env, "", roo_windows::material2::text_style_subtitle1()));
     };
     state_ui_.widget_setter_fn = [this](roo::string_view item_id,
                                         roo_windows::Widget& dest) {
@@ -52,15 +52,15 @@ class ThermometerSelectorModel
 
   void maybeAddTransceiver(
       const roo_transceivers::DeviceLocator& device,
-      const roo_transceivers_Descriptor& descriptor) override {
-    for (size_t sensor_idx = 0; sensor_idx < descriptor.sensors_count;
+      const roo_transceivers::Descriptor& descriptor) override {
+    for (size_t sensor_idx = 0; sensor_idx < descriptor.sensors_size();
          ++sensor_idx) {
-      if (descriptor.sensors[sensor_idx].quantity !=
-          roo_transceivers_Quantity_kTemperature) {
+      if (descriptor.sensors(sensor_idx).quantity() !=
+          roo_transceivers::Quantity::kTemperature) {
         continue;
       }
       roo_transceivers::SensorLocator sensor_loc(
-          device, descriptor.sensors[sensor_idx].id);
+          device, descriptor.sensors(sensor_idx).id().c_str());
       addItem(sensor_loc);
     }
   }
@@ -79,7 +79,7 @@ class ThermometerSelectorModel
       // if (m.value() >= 85 || m.value() <= -55) {
       //   label.setTextf("");
       // } else {
-      CHECK_EQ(roo_transceivers_Quantity_kTemperature, m.quantity());
+      CHECK(m.quantity() == roo_transceivers::Quantity::kTemperature);
       dest.setTextf("%3.1f°C", m.value());
       // }
     }

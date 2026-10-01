@@ -2,10 +2,10 @@
 
 #include <Arduino.h>
 
+#include "roo_locale/languages.h"
 #include "roo_transceivers/binding/binding.h"
 #include "roo_transceivers/notification.h"
 #include "roo_windows/dialogs/string_constants.h"
-#include "roo_locale/languages.h"
 #include "roo_windows_transceivers/model.h"
 
 namespace roo_windows_transceivers {
@@ -135,11 +135,11 @@ class SimpleTransceiverSelectorModel
  protected:
   virtual void maybeAddTransceiver(
       const roo_transceivers::DeviceLocator& device,
-      const roo_transceivers_Descriptor& descriptor) = 0;
+      const roo_transceivers::Descriptor& descriptor) = 0;
 
   void updateSensors() {
     Base::clear();
-    roo_transceivers_Descriptor descriptor;
+    roo_transceivers::Descriptor descriptor;
     transceivers_.forEachDevice(
         [&](const roo_transceivers::DeviceLocator& device_loc) {
           if (!transceivers_.getDeviceDescriptor(device_loc, descriptor)) {

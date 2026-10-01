@@ -20,8 +20,8 @@ class SwitchSelectorModel
       std::vector<ModelItem<roo_transceivers::ActuatorBinding>> bindings)
       : Base(env, transceivers, std::move(bindings)) {
     state_ui_.widget_creator_fn = [env]() {
-      return std::unique_ptr<roo_windows::Widget>(
-          new roo_windows::TextLabel(*env, "", roo_windows::material2::text_style_subtitle1()));
+      return std::unique_ptr<roo_windows::Widget>(new roo_windows::TextLabel(
+          *env, "", roo_windows::material2::text_style_subtitle1()));
     };
     state_ui_.widget_setter_fn = [this](roo::string_view item_id,
                                         roo_windows::Widget& dest) {
@@ -54,23 +54,26 @@ class SwitchSelectorModel
 
   void maybeAddTransceiver(
       const roo_transceivers::DeviceLocator& device,
-      const roo_transceivers_Descriptor& descriptor) override {
-    for (size_t actuator_idx = 0; actuator_idx < descriptor.actuators_count;
+      const roo_transceivers::Descriptor& descriptor) override {
+    for (size_t actuator_idx = 0; actuator_idx < descriptor.actuators_size();
          ++actuator_idx) {
-      if (descriptor.actuators[actuator_idx].quantity !=
-          roo_transceivers_Quantity_kBinaryState) {
+      if (descriptor.actuators(actuator_idx).quantity() !=
+          roo_transceivers::Quantity::kBinaryState) {
         continue;
       }
-      if (strcmp(descriptor.sensors[actuator_idx].id,
-                 descriptor.actuators[actuator_idx].id) != 0) {
+      if (actuator_idx >= descriptor.sensors_size()) {
         continue;
       }
-      if (descriptor.sensors[actuator_idx].quantity !=
-          roo_transceivers_Quantity_kBinaryState) {
+      if (strcmp(descriptor.sensors(actuator_idx).id().c_str(),
+                 descriptor.actuators(actuator_idx).id().c_str()) != 0) {
+        continue;
+      }
+      if (descriptor.sensors(actuator_idx).quantity() !=
+          roo_transceivers::Quantity::kBinaryState) {
         continue;
       }
       roo_transceivers::ActuatorLocator actuator_loc(
-          device, descriptor.actuators[actuator_idx].id);
+          device, descriptor.actuators(actuator_idx).id().c_str());
       addItem(actuator_loc);
     }
   }
@@ -88,7 +91,7 @@ class SwitchSelectorModel
     if (!m.isDefined()) {
       dest.setText("");
     } else {
-      CHECK_EQ(roo_transceivers_Quantity_kBinaryState, m.quantity());
+      CHECK(m.quantity() == roo_transceivers::Quantity::kBinaryState);
       dest.setTextf(m.value() == 0.0f   ? kStrSwitchOff
                     : m.value() == 1.0f ? kStrSwitchOn
                                         : "");

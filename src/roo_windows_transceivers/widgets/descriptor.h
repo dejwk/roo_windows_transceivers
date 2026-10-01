@@ -11,7 +11,7 @@ class DescriptorWidget : public roo_windows::FlexLayout {
  public:
   DescriptorWidget(roo_windows::ApplicationContext& env);
 
-  void setDescriptor(const roo_transceivers_Descriptor& descriptor);
+  void setDescriptor(const roo_transceivers::Descriptor& descriptor);
 
  private:
   roo_windows::StringViewLabel sensors_caption_;
