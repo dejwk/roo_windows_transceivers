@@ -64,8 +64,8 @@ class SwitchSelectorModel
       if (actuator_idx >= descriptor.sensors_size()) {
         continue;
       }
-      if (descriptor.sensors(actuator_idx).id().view() !=
-          descriptor.actuators(actuator_idx).id().view()) {
+      if (descriptor.sensors(actuator_idx).id() !=
+          descriptor.actuators(actuator_idx).id()) {
         continue;
       }
       if (descriptor.sensors(actuator_idx).quantity() !=
@@ -73,7 +73,7 @@ class SwitchSelectorModel
         continue;
       }
       roo_transceivers::ActuatorLocator actuator_loc(
-          device, descriptor.actuators(actuator_idx).id().view());
+          device, descriptor.actuators(actuator_idx).id());
       addItem(actuator_loc);
     }
   }

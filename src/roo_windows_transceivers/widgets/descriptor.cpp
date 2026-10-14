@@ -100,7 +100,7 @@ void DescriptorWidget::setDescriptor(
       descriptor.sensors_size() > 0 ? Visibility::kVisible : Visibility::kGone);
   for (size_t i = 0; i < 16; ++i) {
     if (i < descriptor.sensors_size()) {
-      sensors_[i].setText(descriptor.sensors(i).id().view());
+      sensors_[i].setText(descriptor.sensors(i).id());
       sensors_[i].setVisibility(Visibility::kVisible);
     } else {
       sensors_[i].setVisibility(Visibility::kGone);
@@ -108,7 +108,7 @@ void DescriptorWidget::setDescriptor(
   }
   for (size_t i = 0; i < 16; ++i) {
     if (i < descriptor.actuators_size()) {
-      actuators_[i].setText(descriptor.actuators(i).id().view());
+      actuators_[i].setText(descriptor.actuators(i).id());
       actuators_[i].setVisibility(Visibility::kVisible);
     } else {
       actuators_[i].setVisibility(Visibility::kGone);
