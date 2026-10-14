@@ -1,5 +1,7 @@
 #include "roo_windows_transceivers/activity/assignment_dialog.h"
 
+#include "roo_windows/material2/typography.h"
+
 using roo_windows::material2::Dialog;
 
 namespace roo_windows_transceivers {

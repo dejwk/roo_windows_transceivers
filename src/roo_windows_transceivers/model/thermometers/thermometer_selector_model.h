@@ -1,6 +1,7 @@
 #pragma once
 
 #include "roo_icons/filled/device.h"
+#include "roo_windows/material2/typography.h"
 #include "roo_windows_transceivers/model/simple_model.h"
 #include "roo_windows_transceivers/model/thermometers/resources.h"
 

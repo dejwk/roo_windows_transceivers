@@ -17,6 +17,7 @@
 #include "roo_windows/material2/icon_with_caption.h"
 #include "roo_windows/material2/menu/title.h"
 #include "roo_windows/material2/text_field.h"
+#include "roo_windows/material2/typography.h"
 #include "roo_windows/widgets/icon.h"
 #include "roo_windows_transceivers/model.h"
 

@@ -1,6 +1,7 @@
 #include "roo_windows_transceivers/activity/list_activity.h"
 
 #include "roo_windows/core/application.h"
+#include "roo_windows/material2/typography.h"
 #include "roo_windows_transceivers/model.h"
 
 namespace roo_windows_transceivers {
