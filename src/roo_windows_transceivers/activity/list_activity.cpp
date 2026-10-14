@@ -19,7 +19,6 @@ ListItem::ListItem(roo_windows::ApplicationContext& env,
   setGap(roo_windows::Scaled(8));
   add(thermometer_icon_, {.flex_grow = 0, .flex_shrink = 0});
 
-  id_.setMargins(roo_windows::MarginSize::kNone);
   id_.setPadding(roo_windows::PaddingSize::kNone);
   add(id_, {.flex_grow = 1, .flex_shrink = 1});
 

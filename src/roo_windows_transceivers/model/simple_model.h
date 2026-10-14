@@ -5,7 +5,7 @@
 #include "roo_locale/languages.h"
 #include "roo_transceivers/binding/binding.h"
 #include "roo_transceivers/notification.h"
-#include "roo_windows/dialogs/string_constants.h"
+#include "roo_windows/material2/dialogs/string_constants.h"
 #include "roo_windows_transceivers/model.h"
 
 namespace roo_windows_transceivers {

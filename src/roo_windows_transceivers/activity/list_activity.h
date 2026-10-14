@@ -3,18 +3,18 @@
 #include <Arduino.h>
 
 #include "roo_scheduler.h"
-#include "roo_windows/composites/menu/title.h"
 #include "roo_windows/containers/flex_layout.h"
 #include "roo_windows/containers/holder.h"
 #include "roo_windows/containers/list_layout.h"
 #include "roo_windows/containers/scrollable_panel.h"
 #include "roo_windows/core/destination.h"
 #include "roo_windows/indicators/wifi.h"
+#include "roo_windows/material2/divider.h"
+#include "roo_windows/material2/menu/title.h"
+#include "roo_windows/material2/progress_bar.h"
+#include "roo_windows/material2/switch.h"
 #include "roo_windows/widgets/blank.h"
-#include "roo_windows/widgets/divider.h"
 #include "roo_windows/widgets/icon.h"
-#include "roo_windows/widgets/progress_bar.h"
-#include "roo_windows/widgets/switch.h"
 #include "roo_windows/widgets/text_label.h"
 #include "roo_windows_transceivers/model.h"
 
@@ -90,7 +90,7 @@ class ListActivityContents : public roo_windows::FlexLayout,
   void measurementsChanged() override;
 
   Model& model_;
-  roo_windows::menu::Title title_;
+  roo_windows::material2::menu::Title title_;
   ListModel list_model_;
   List list_;
 };

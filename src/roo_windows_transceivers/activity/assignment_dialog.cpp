@@ -1,6 +1,6 @@
 #include "roo_windows_transceivers/activity/assignment_dialog.h"
 
-using roo_windows::Dialog;
+using roo_windows::material2::Dialog;
 
 namespace roo_windows_transceivers {
 
@@ -13,7 +13,6 @@ UnassignedRadioGroupItem::UnassignedRadioGroupItem(
       ui_(ui) {
   setAlignItems(roo_windows::AlignItems::kCenter);
   setGap(roo_windows::Scaled(8));
-  id_.setMargins(roo_windows::MarginSize::kNone);
   id_.setPadding(roo_windows::PaddingSize::kNone);
   add(id_, {.flex_grow = 1, .flex_shrink = 1});
   add(*reading_, {.flex_grow = 0, .flex_shrink = 0});
@@ -36,7 +35,7 @@ void UnassignedRadioGroupModel::set(int idx, roo_windows::Widget& dest) const {
 
 UnassignedItemSelectionDialog::UnassignedItemSelectionDialog(
     roo_windows::ApplicationContext& env, Model& model)
-    : roo_windows::RadioListDialog(
+    : roo_windows::material2::RadioListDialog(
           env,
           [&]() {
             return std::make_unique<UnassignedRadioGroupItem>(env, model.ui());

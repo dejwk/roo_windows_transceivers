@@ -11,9 +11,9 @@
 #include "roo_transceivers/binding/hal/defaults.h"
 #include "roo_transceivers/onewire/onewire.h"
 #include "roo_windows.h"
-#include "roo_windows/composites/menu/basic_navigation_item.h"
-#include "roo_windows/composites/menu/menu.h"
 #include "roo_windows/containers/aligned_layout.h"
+#include "roo_windows/material2/menu/basic_navigation_item.h"
+#include "roo_windows/material2/menu/menu.h"
 #include "roo_windows_transceivers.h"
 #include "roo_windows_transceivers/model/thermometers/thermometer_selector_model.h"
 
@@ -96,7 +96,7 @@ std::vector<
     roles = {
         {kitchen_binding, "Kitchen"},
         {bedroom_binding, "Bedroom"},
-    };
+};
 
 roo_windows_transceivers::ThermometerSelectorModel thermometer_roles(
     &app.context(), transceivers, roles);
@@ -109,17 +109,17 @@ roo_windows_transceivers::Configurator onewire_setup(app.context(),
 roo_windows::Task& task = app.addTaskFullScreen();
 NavigationHost& navigation = task.navigation();
 
-class SettingsMenu : public menu::Menu {
+class SettingsMenu : public material2::menu::Menu {
  public:
   SettingsMenu(ApplicationContext& context, NavigationHost& navigation)
-      : menu::Menu(context, "Settings"),
+      : material2::menu::Menu(context, "Settings"),
         onewire_item_(context, SCALED_ROO_ICON(filled, content_link),
                       "Thermometers", navigation, onewire_setup.main()) {
     add(onewire_item_);
   }
 
  private:
-  menu::BasicNavigationItem onewire_item_;
+  material2::menu::BasicNavigationItem onewire_item_;
 };
 
 SettingsMenu settings_menu(app.context(), navigation);

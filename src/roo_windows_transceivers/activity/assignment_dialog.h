@@ -4,11 +4,11 @@
 #include <string>
 
 #include "roo_windows.h"
-#include "roo_windows/composites/radio/radio_list.h"
 #include "roo_windows/containers/flex_layout.h"
 #include "roo_windows/containers/list_layout.h"
-#include "roo_windows/dialogs/dialog.h"
-#include "roo_windows/dialogs/radio_list_dialog.h"
+#include "roo_windows/material2/dialogs/dialog.h"
+#include "roo_windows/material2/dialogs/radio_list_dialog.h"
+#include "roo_windows/material2/radio_list.h"
 #include "roo_windows_transceivers/model.h"
 
 namespace roo_windows_transceivers {
@@ -27,7 +27,8 @@ class UnassignedRadioGroupItem : public roo_windows::FlexLayout {
   const Ui* ui_;
 };
 
-class UnassignedRadioGroupModel : public roo_windows::RadioListModel {
+class UnassignedRadioGroupModel
+    : public roo_windows::material2::RadioListModel {
  public:
   UnassignedRadioGroupModel(Model& model) : model_(model) {}
 
@@ -38,8 +39,9 @@ class UnassignedRadioGroupModel : public roo_windows::RadioListModel {
   Model& model_;
 };
 
-class UnassignedItemSelectionDialog : public roo_windows::RadioListDialog,
-                                      public Model::EventListener {
+class UnassignedItemSelectionDialog
+    : public roo_windows::material2::RadioListDialog,
+      public Model::EventListener {
  public:
   UnassignedItemSelectionDialog(roo_windows::ApplicationContext& env,
                                 Model& model);

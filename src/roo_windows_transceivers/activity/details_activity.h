@@ -7,16 +7,17 @@
 #include "roo_icons/filled/content.h"
 #include "roo_icons/filled/notification.h"
 #include "roo_windows.h"
-#include "roo_windows/composites/menu/title.h"
 #include "roo_windows/config.h"
 #include "roo_windows/containers/flex_layout.h"
 #include "roo_windows/containers/stacked_layout.h"
 #include "roo_windows/core/destination.h"
+#include "roo_windows/core/padding_mixin.h"
 #include "roo_windows/core/task.h"
-#include "roo_windows/widgets/divider.h"
+#include "roo_windows/material2/divider.h"
+#include "roo_windows/material2/icon_with_caption.h"
+#include "roo_windows/material2/menu/title.h"
+#include "roo_windows/material2/text_field.h"
 #include "roo_windows/widgets/icon.h"
-#include "roo_windows/widgets/icon_with_caption.h"
-#include "roo_windows/widgets/text_field.h"
 #include "roo_windows_transceivers/model.h"
 
 namespace roo_windows_transceivers {
@@ -56,7 +57,6 @@ class DetailsActivityContents : public roo_windows::FlexLayout,
     // indicator_.setPadding(roo_windows::PaddingSize::kTiny);
     // add(indicator_, VerticalLayout::Params());
     name_.setPadding(roo_windows::PaddingSize::kNone);
-    name_.setMargins(roo_windows::MarginSize::kNone);
     // id_.setPadding(roo_windows::PaddingSize::kNone);
     // id_.setMargins(roo_windows::MarginSize::kNone);
     add(name_);
@@ -117,14 +117,16 @@ class DetailsActivityContents : public roo_windows::FlexLayout,
 
   Model& model_;
   int idx_;
-  roo_windows::menu::Title title_;
+  roo_windows::material2::menu::Title title_;
   roo_windows::TextLabel name_;
   roo_windows::TextLabel id_;
   std::unique_ptr<Widget> reading_;
-  roo_windows::HorizontalDivider d1_;
+  roo_windows::material2::HorizontalDivider d1_;
   roo_windows::FlexLayout actions_;
-  roo_windows::IconWithCaption button_unassign_;
-  roo_windows::IconWithCaption button_assign_;
+  roo_windows::PaddingMixin<roo_windows::material2::IconWithCaption>
+      button_unassign_;
+  roo_windows::PaddingMixin<roo_windows::material2::IconWithCaption>
+      button_assign_;
 };
 
 class DetailsActivity : public roo_windows::Destination {

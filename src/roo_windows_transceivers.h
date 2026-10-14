@@ -50,7 +50,8 @@ class Configurator {
     task.application().showAlertDialog(
         task, model_.ui()->labels.unassign_question,
         model_.ui()->labels.unassign_question_supporting_text,
-        {roo_windows::kStrDialogCancel, roo_windows::kStrDialogOK},
+        {roo_windows::material2::kStrDialogCancel,
+         roo_windows::material2::kStrDialogOK},
         [this, idx](int id) {
           if (id == 1) {
             model_.unbind(idx);
