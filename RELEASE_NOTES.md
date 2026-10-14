@@ -1,3 +1,11 @@
+# Unreleased
+
+- Require roo_pb 0.2.0 and use length-aware string views for protobuf fields.
+  Wire encoding and payload capacities remain unchanged. Rebuild consumers for
+  the updated protobuf storage layout.
+
+---
+
 # roo_windows_transceivers 1.0.0
 
 - Updated UI components to current roo_windows APIs and flex layouts.

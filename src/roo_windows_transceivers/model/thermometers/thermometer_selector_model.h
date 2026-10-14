@@ -60,7 +60,7 @@ class ThermometerSelectorModel
         continue;
       }
       roo_transceivers::SensorLocator sensor_loc(
-          device, descriptor.sensors(sensor_idx).id().c_str());
+          device, descriptor.sensors(sensor_idx).id().view());
       addItem(sensor_loc);
     }
   }
