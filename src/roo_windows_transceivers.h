@@ -4,6 +4,7 @@
 ///
 /// Provides transceiver-focused activities and widgets for roo_windows.
 
+#include "roo_windows/material2/dialogs/alert_dialog.h"
 #include "roo_windows_transceivers/activity/assignment_dialog.h"
 #include "roo_windows_transceivers/activity/details_activity.h"
 #include "roo_windows_transceivers/activity/list_activity.h"
@@ -47,7 +48,7 @@ class Configurator {
   }
 
   void unassignItem(roo_windows::Task& task, int idx) {
-    task.application().showAlertDialog(
+    roo_windows::material2::ShowAlertDialog(
         task, model_.ui()->labels.unassign_question,
         model_.ui()->labels.unassign_question_supporting_text,
         {roo_windows::material2::kStrDialogCancel,
