@@ -30,7 +30,7 @@
     ],
     "dependencies": {
         "dejwk/roo_display": ">=3.3.1",
-        "dejwk/roo_onewire": ">=2.0.13",
+        "dejwk/roo_onewire": ">=2.0.14",
         "dejwk/roo_pb": ">=0.2.0",
         "dejwk/roo_scheduler": ">=2.3.0",
         "dejwk/roo_time": ">=2.0.1",
