@@ -7,6 +7,7 @@
 #include "roo_onewire.h"
 #include "roo_scheduler.h"
 #include "roo_time.h"
+#include "roo_transceivers.h"
 #include "roo_transceivers/binding/binding.h"
 #include "roo_transceivers/binding/hal/defaults.h"
 #include "roo_transceivers/onewire/onewire.h"

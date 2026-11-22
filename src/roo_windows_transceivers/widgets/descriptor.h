@@ -1,6 +1,7 @@
 #pragma once
 
 #include "roo_transceivers.pb.h"
+#include "roo_windows.h"
 #include "roo_windows/containers/flex_layout.h"
 #include "roo_windows/core/theme.h"
 #include "roo_windows/widgets/text_label.h"

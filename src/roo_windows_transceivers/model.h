@@ -5,7 +5,9 @@
 #include <vector>
 
 #include "roo_backport.h"
+#include "roo_collections.h"
 #include "roo_collections/flat_small_hash_set.h"
+#include "roo_windows.h"
 #include "roo_windows/core/widget.h"
 #include "roo_windows/widgets/text_label.h"
 

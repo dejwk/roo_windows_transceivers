@@ -4,6 +4,7 @@
 ///
 /// Provides transceiver-focused activities and widgets for roo_windows.
 
+#include "roo_windows.h"
 #include "roo_windows/material2/dialogs/alert_dialog.h"
 #include "roo_windows_transceivers/activity/assignment_dialog.h"
 #include "roo_windows_transceivers/activity/details_activity.h"
