@@ -15,6 +15,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "@roo_pb",
+        "@roo_scheduler",
         "@roo_transceivers",
         "@roo_windows",
     ],
