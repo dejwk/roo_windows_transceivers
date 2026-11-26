@@ -1,8 +1,11 @@
-# Unreleased
+# roo_windows_transceivers 1.1.0
 
-- Require roo_pb 0.2.0 and use length-aware string views for protobuf fields.
-  Wire encoding and payload capacities remain unchanged. Rebuild consumers for
-  the updated protobuf storage layout.
+- Migrated transceiver descriptors from nanopb to `roo_pb` 1.0.0. Widgets and selectors now use length-aware views for protobuf identifiers. The migration preserves wire encoding and payload capacities. Rebuild consumers for the new protobuf storage layout.
+- Migrated transceiver screens and dialogs to `roo_windows` Material 2 APIs. Updated the roles example to use Material 2 menus and `roo_scheduler::SchedulingService`.
+- Fixed Polish localization for switch and thermometer screens and added a regression test. The switch selector now skips actuators whose corresponding sensor is missing.
+- Fixed Arduino dependency discovery by adding top-level headers for dependencies referenced through nested includes.
+- Updated dependency requirements to `roo_display` 3.5.0, `roo_scheduler` 2.4.0, `roo_time` 2.2.1, `roo_transceivers` 1.4.0, and `roo_windows` 1.11.1. Updated Bazel development dependencies to `roo_onewire` 2.1.0 and `roo_testing` 2.7.1.
+- Updated CI to the `roo_testing` 2.7.0 Arduino ESP32 profile. Added Bazel configuration files and a test runner for Arduino, ESP-IDF, and Pico SDK profiles.
 
 ---
 
